@@ -1,0 +1,10 @@
+wikiextractor==0.01
+sentencepiece
+ninja
+emoji
+python-dotenv
+flask
+gunicorn
+torch
+torchvision
+python-dotenv==0.15.0

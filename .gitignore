@@ -1,0 +1,6 @@
+.idea/*
+*/optimizer
+fastai1
+*/__pycache__/*
+*.env
+*.pyc
