@@ -4,7 +4,7 @@ import dropbox
 from dropbox.files import WriteMode
 from dropbox.exceptions import ApiError, AuthError
 
-from fastai1.basics import *
+from ...fastai1.basics import *
 
 class DropboxHandler:
     def __init__(self, app_root, lang='si'):

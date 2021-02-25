@@ -40,7 +40,7 @@ pip3 install -r requirements.txt
 mkdir optimizer
 git clone https://gitlab.com/yathindra/fastai1.git
 git clone https://github.com/lessw2020/Best-Deep-Learning-Optimizers.git
-cp ./Best-Deep-Learning-Optimizers/diffgrad/diffgrad.py ./optimizer/DiffGradOptimizer.py
+cp ./Best-Deep-Learning-Optimizers/diffgrad/diffgrad.py ./loretex/optimizer/DiffGradOptimizer.py
 rm -rf ./Best-Deep-Learning-Optimizers
 
 #cd ..
