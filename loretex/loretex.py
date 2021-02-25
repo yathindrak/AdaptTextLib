@@ -77,7 +77,7 @@ class LoReTex:
         baseLMDataBunchLoader = BaseLMDataBunchLoader(self.base_lm_data_path, self.splitting_ratio)
         data_lm_fwd = baseLMDataBunchLoader.load()
 
-        baseLMDataBunchLoader = BaseLMDataBunchLoader(self.base_lm_data_path, self.splitting_ratio, self.data_root,
+        baseLMDataBunchLoader = BaseLMDataBunchLoader(self.base_lm_data_path, self.splitting_ratio,
                                                       is_backward=True)
         data_lm_bwd = baseLMDataBunchLoader.load()
 
