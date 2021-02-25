@@ -1,4 +1,4 @@
-from fastai1.text import *
+from ...fastai1.text import *
 from .baseDataBunchLoader import BaseDataBunchLoader
 
 

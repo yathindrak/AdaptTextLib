@@ -1,5 +1,4 @@
-from fastai1.text import *
-from fastai1.basics import *
+from ...fastai1.text import *
 from ..utils.dropboxhandler import DropboxHandler
 from .baseDataBunchLoader import BaseDataBunchLoader
 

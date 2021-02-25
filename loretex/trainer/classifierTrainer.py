@@ -1,6 +1,6 @@
-from fastai1.text import *
-from fastai1.basics import *
-from fastai1.callbacks import SaveModelCallback, ReduceLROnPlateauCallback
+from ...fastai1.text import *
+from ...fastai1.basics import *
+from ...fastai1.callbacks import SaveModelCallback, ReduceLROnPlateauCallback
 from ..hyperparameter.tuner import HyperParameterTuner
 from .trainer import Trainer
 from ..optimizer.DiffGradOptimizer import DiffGrad

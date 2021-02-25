@@ -1,4 +1,4 @@
-from fastai1.basics import *
+from ...fastai1.basics import *
 import emoji
 
 class WikiHandler:

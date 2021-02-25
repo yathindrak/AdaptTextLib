@@ -1,4 +1,4 @@
-from fastai1.basics import *
+from ...fastai1.basics import *
 
 class HyperParameterTuner:
     def __init__(self, learn: Learner):

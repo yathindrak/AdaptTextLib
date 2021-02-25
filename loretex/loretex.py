@@ -4,15 +4,15 @@ from sklearn.model_selection import train_test_split
 from dotenv import load_dotenv
 import os
 
-from fastai1.basics import *
-from loretex.dataloader.baseLMDataBunchLoader import BaseLMDataBunchLoader
-from loretex.dataloader.classificationDataBunchLoader import ClassificationDataBunchLoader
-from loretex.dataloader.lMDataBunchLoader import LMDataBunchLoader
-from loretex.preprocessor.preprocessor import TextPreProcessor
-from loretex.trainer.baseLMTrainer import BaseLMTrainer
-from loretex.trainer.classifierTrainer import ClassifierTrainer
-from loretex.trainer.lMTrainer import LMTrainer
-from loretex.utils.wikihandler import WikiHandler
+from ..fastai1.basics import *
+from .dataloader.baseLMDataBunchLoader import BaseLMDataBunchLoader
+from .dataloader.classificationDataBunchLoader import ClassificationDataBunchLoader
+from .dataloader.lMDataBunchLoader import LMDataBunchLoader
+from .preprocessor.preprocessor import TextPreProcessor
+from .trainer.baseLMTrainer import BaseLMTrainer
+from .trainer.classifierTrainer import ClassifierTrainer
+from .trainer.lMTrainer import LMTrainer
+from .utils.wikihandler import WikiHandler
 
 load_dotenv('.env')
 
