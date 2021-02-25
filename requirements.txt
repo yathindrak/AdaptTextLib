@@ -1,9 +1,9 @@
 wikiextractor==0.01
-sentencepiece
-ninja
-emoji
-flask
-gunicorn
-torch
-torchvision
+sentencepiece==0.1.95
+ninja==1.10.0
+emoji==1.2.0
+flask==1.1.2
+gunicorn==20.0.4
+torch===1.7.0
 python-dotenv==0.15.0
+dropbox==11.2.0
