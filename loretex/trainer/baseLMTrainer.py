@@ -45,9 +45,6 @@ class BaseLMTrainer(Trainer):
         return learn
 
     def train(self):
-        # config = dict(emb_sz=400, n_hid=1550, n_layers=4, pad_token=1, qrnn=False, tie_weights=True, out_bias=True, output_p=0.25, hidden_p=0.1, input_p=0.2, embed_p=0.02, weight_p=0.15)
-        # trn_args = dict(clip=0.12, alpha=2, beta=1)
-
         dropout_probs = dict(input=0.25, output=0.1, hidden=0.15, embedding=0.02, weight=0.2)
         size_of_embedding = 400
         num_of_hidden_neurons = 1200
@@ -57,13 +54,6 @@ class BaseLMTrainer(Trainer):
                       input_p=dropout_probs['input'], output_p=dropout_probs['output'],
                       hidden_p=dropout_probs['hidden'], embed_p=dropout_probs['embedding'],
                       weight_p=dropout_probs['weight'], pad_token=1, qrnn=False, out_bias=True)
-
-        # lm_fn_1 = self.mdl_path / f'{self.lang}_wt.pth'
-
-        # if lm_fn_1.exists():
-        #   learn = retrieve_language_model(self.data, config=config, drop_multi_val=self.drop_mult, pretrained_file_paths=self.lm_fns, metrics=[accuracy]).to_fp16()
-        # else:
-        #   learn = retrieve_language_model(self.data, config=config, drop_multi_val=self.drop_mult, metrics=[accuracy]).to_fp16()
 
         learn = self.retrieve_language_model(self.data, config=config, drop_multi_val=self.drop_mult,
                                              metrics=[accuracy]).to_fp16()

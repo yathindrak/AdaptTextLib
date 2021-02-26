@@ -21,7 +21,7 @@ class DropboxHandler:
         np.savetxt(time_str_fname, df.values, fmt='%d')
 
         file_to_upload = time_str_fname
-        file_where_to = "/loretex/"+time_str_fname
+        file_where_to = "/loretex/articles/" + time_str_fname
 
         with open(file_to_upload, 'rb') as f:
             try:
@@ -40,11 +40,11 @@ class DropboxHandler:
         if not Path(articles_path).exists():
             raise Exception("Wiki articles are not downloaded..")
 
-        response = self.dbx.files_list_folder("/loretex")
+        response = self.dbx.files_list_folder("/loretex/articles")
         files_list = []
         dest_file_paths = []
         for file in response.entries:
-            file_name = "/loretex/" + file.name
+            file_name = "/loretex/articles/" + file.name
             metadata, res = self.dbx.files_download(file_name)
             f_down_content = res.content
 

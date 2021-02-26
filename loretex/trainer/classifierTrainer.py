@@ -73,16 +73,16 @@ class ClassifierTrainer(Trainer):
     tuner = HyperParameterTuner(learn)
     lr = tuner.find_optimized_lr()
 
-    learn.fit_one_cycle(20, lr, callbacks=[SaveModelCallback(learn), ReduceLROnPlateauCallback(learn, factor=0.8)])
+    learn.fit_one_cycle(11, lr, callbacks=[SaveModelCallback(learn), ReduceLROnPlateauCallback(learn, factor=0.8)])
 
     learn.freeze_to(-2)
-    learn.fit_one_cycle(20, lr, callbacks=[SaveModelCallback(learn), ReduceLROnPlateauCallback(learn, factor=0.8)])
+    learn.fit_one_cycle(11, lr, callbacks=[SaveModelCallback(learn), ReduceLROnPlateauCallback(learn, factor=0.8)])
 
     learn.freeze_to(-3)
-    learn.fit_one_cycle(20, lr, callbacks=[SaveModelCallback(learn), ReduceLROnPlateauCallback(learn, factor=0.8)])
+    learn.fit_one_cycle(11, lr, callbacks=[SaveModelCallback(learn), ReduceLROnPlateauCallback(learn, factor=0.8)])
 
     learn.unfreeze()
-    learn.fit_one_cycle(30, lr, callbacks=[SaveModelCallback(learn), ReduceLROnPlateauCallback(learn, factor=0.8)])
+    learn.fit_one_cycle(11, lr, callbacks=[SaveModelCallback(learn), ReduceLROnPlateauCallback(learn, factor=0.8)])
 
     if self.is_backward:
       learn.save(f'{self.lang}_clas_bwd')
