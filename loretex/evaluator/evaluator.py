@@ -1,3 +1,4 @@
+from fastai1.text import TextClassificationInterpretation
 from ...fastai1.basics import *
 from sklearn.metrics import classification_report
 from sklearn.metrics import roc_curve, auc
