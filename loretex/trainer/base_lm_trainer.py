@@ -7,13 +7,14 @@ from ..optimizer.DiffGradOptimizer import DiffGrad
 
 
 class BaseLMTrainer(Trainer):
-    def __init__(self, data, lm_fns, mdl_path, model_store_path, drop_mult=0.9, lang='si'):
+    def __init__(self, data, lm_fns, mdl_path, model_store_path, is_gpu=True, drop_mult=0.9, lang='si'):
         self.data = data
         self.lm_fns = lm_fns
         self.mdl_path = mdl_path
         self.model_store_path = model_store_path
         self.drop_mult = drop_mult
         self.lang = lang
+        self.is_gpu = is_gpu
 
     def retrieve_language_model(self, databunch: DataBunch, config: dict, drop_multi_val: float = 1.,
                                 pretrained_file_paths: OptStrTuple = None, metrics=None) -> 'LanguageLearner':
@@ -55,8 +56,12 @@ class BaseLMTrainer(Trainer):
                       hidden_p=dropout_probs['hidden'], embed_p=dropout_probs['embedding'],
                       weight_p=dropout_probs['weight'], pad_token=1, qrnn=False, out_bias=True)
 
-        learn = self.retrieve_language_model(self.data, config=config, drop_multi_val=self.drop_mult,
+        if self.is_gpu:
+            learn = self.retrieve_language_model(self.data, config=config, drop_multi_val=self.drop_mult,
                                              metrics=[accuracy]).to_fp16()
+        else:
+            learn = self.retrieve_language_model(self.data, config=config, drop_multi_val=self.drop_mult,
+                                                 metrics=[accuracy])
 
         optar = partial(DiffGrad, betas=(.91, .999), eps=1e-7)
         learn.opt_func = optar

@@ -1,6 +1,7 @@
 import emoji
 
-class TextPreProcessor():
+
+class TextPreProcessor:
     def __init__(self, df, text_name):
         self.df = df
         self.text_name = text_name

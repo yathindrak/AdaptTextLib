@@ -33,9 +33,15 @@ class LoReTex:
         self.mdl_path = self.path / 'models'
         self.lm_fns = [self.mdl_path / f'{lang}_wt', self.mdl_path / f'{lang}_wt_vocab']
         self.lm_fns_bwd = [self.mdl_path / f'{lang}_wt_bwd', self.mdl_path / f'{lang}_wt_vocab_bwd']
-        self.lm_store_path = [f'data/{lang}wiki/models/si_wt_vocab.pkl', f'data/{lang}wiki/models/si_wt.pth', f'data/{lang}wiki/models/si_wt_vocab_bwd.pkl', f'data/{lang}wiki/models/si_wt_bwd.pth']
+        self.lm_store_path = [f'data/{lang}wiki/models/si_wt_vocab.pkl', f'data/{lang}wiki/models/si_wt.pth',
+                              f'data/{lang}wiki/models/si_wt_vocab_bwd.pkl', f'data/{lang}wiki/models/si_wt_bwd.pth']
         self.lm_store_files = ['si_wt_vocab.pkl', 'si_wt.pth', 'si_wt_vocab_bwd.pkl', 'si_wt_bwd.pth']
         self.classifiers_store_path = ["models/fwd-export.pkl", "models/bwd-export.pkl"]
+
+        if not torch.cuda.is_available():
+            self.is_gpu = False
+            warnings.warn(
+                'Note that CUDA support is not available for your instance, Hence training will be continued on CPU')
 
     def setup_wiki_data(self):
         # making required directories
@@ -104,11 +110,11 @@ class LoReTex:
         model_store_path_bwd = self.mdl_path / Path(f'{self.lang}_wt_vocab_bwd.pkl')
 
         # forward
-        lmTrainer_fwd = BaseLMTrainer(data_lm_fwd, self.lm_fns, self.mdl_path, model_store_path)
+        lmTrainer_fwd = BaseLMTrainer(data_lm_fwd, self.lm_fns, self.mdl_path, model_store_path, is_gpu=self.is_gpu)
         lmTrainer_fwd.train()
 
         # backward
-        lmTrainer_bwd = BaseLMTrainer(data_lm_bwd, self.lm_fns_bwd, self.mdl_path, model_store_path_bwd)
+        lmTrainer_bwd = BaseLMTrainer(data_lm_bwd, self.lm_fns_bwd, self.mdl_path, model_store_path_bwd, is_gpu=self.is_gpu)
         lmTrainer_bwd.train()
 
     def buildClassifier(self, df, text_name, label_name, preprocessor=None):
@@ -134,10 +140,12 @@ class LoReTex:
         df_trn, df_val = train_test_split(df, stratify=df[label_name], test_size=0.1)
 
         # forward training
-        lmDataBunchLoader = LMDataBunchLoader(df_trn, df_val, text_name, label_name, self.splitting_ratio, self.data_root)
+        lmDataBunchLoader = LMDataBunchLoader(df_trn, df_val, text_name, label_name, self.splitting_ratio,
+                                              self.data_root)
         data_lm = lmDataBunchLoader.load()
 
-        lmDataBunchLoaderBwd = LMDataBunchLoader(df_trn, df_val, text_name, label_name, self.splitting_ratio, self.data_root,
+        lmDataBunchLoaderBwd = LMDataBunchLoader(df_trn, df_val, text_name, label_name, self.splitting_ratio,
+                                                 self.data_root,
                                                  is_backward=True)
         data_lm_bwd = lmDataBunchLoaderBwd.load()
 
@@ -157,16 +165,17 @@ class LoReTex:
 
         classes = data_class.classes
 
-        lmTrainerFwd = LMTrainer(data_lm, self.lm_fns, self.mdl_path, custom_model_store_path, False)
+        lmTrainerFwd = LMTrainer(data_lm, self.lm_fns, self.mdl_path, custom_model_store_path, False, is_gpu=self.is_gpu)
         languageModelFWD = lmTrainerFwd.train()
 
         classifierTrainerFwd = ClassifierTrainer(data_class, self.lm_fns, self.mdl_path, custom_model_store_path, False)
         classifierModelFWD = classifierTrainerFwd.train()
 
-        lmTrainerBwd = LMTrainer(data_lm_bwd, self.lm_fns_bwd, self.mdl_path, custom_model_store_path_bwd, True)
+        lmTrainerBwd = LMTrainer(data_lm_bwd, self.lm_fns_bwd, self.mdl_path, custom_model_store_path_bwd, True, is_gpu=self.is_gpu)
         languageModelBWD = lmTrainerBwd.train()
 
-        classifierTrainerBwd = ClassifierTrainer(data_class_bwd, self.lm_fns_bwd, self.mdl_path, custom_model_store_path_bwd,
+        classifierTrainerBwd = ClassifierTrainer(data_class_bwd, self.lm_fns_bwd, self.mdl_path,
+                                                 custom_model_store_path_bwd,
                                                  True)
         classifierModelBWD = classifierTrainerBwd.train()
 

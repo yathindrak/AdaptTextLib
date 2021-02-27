@@ -7,13 +7,14 @@ from ..optimizer.DiffGradOptimizer import DiffGrad
 
 
 class LMTrainer(Trainer):
-    def __init__(self, data, lm_fns, mdl_path, model_store_path, is_backward=False, drop_mult=0.9, lang='si'):
+    def __init__(self, data, lm_fns, mdl_path, model_store_path, is_backward=False, drop_mult=0.9, is_gpu=True, lang='si'):
         self.data = data
         self.lm_fns = lm_fns
         self.mdl_path = mdl_path
         self.model_store_path = model_store_path
         self.is_backward = is_backward
         self.drop_mult = drop_mult
+        self.is_gpu = is_gpu
         self.lang = lang
 
     def retrieve_language_model(self, databunch: DataBunch, config: dict, drop_multi_val: float = 1.,
@@ -46,9 +47,6 @@ class LMTrainer(Trainer):
         return learn
 
     def train(self):
-        # config = dict(emb_sz=400, n_hid=1550, n_layers=4, pad_token=1, qrnn=False, tie_weights=True, out_bias=True, output_p=0.25, hidden_p=0.1, input_p=0.2, embed_p=0.02, weight_p=0.15)
-        # trn_args = dict(clip=0.12, alpha=2, beta=1)
-
         dropout_probs = dict(input=0.25, output=0.1, hidden=0.15, embedding=0.02, weight=0.2)
         size_of_embedding = 400
         num_of_hidden_neurons = 1200
@@ -63,12 +61,21 @@ class LMTrainer(Trainer):
         lm_fn_1_bwd = self.mdl_path / f'{self.lang}_wt_bwd.pth'
 
         if ((not self.is_backward and lm_fn_1_fwd.exists()) or (self.is_backward and lm_fn_1_bwd.exists())):
-            learn = self.retrieve_language_model(self.data, config=config, drop_multi_val=self.drop_mult,
+            if self.is_gpu:
+                learn = self.retrieve_language_model(self.data, config=config, drop_multi_val=self.drop_mult,
                                                  pretrained_file_paths=self.lm_fns,
                                                  metrics=[error_rate, accuracy, Perplexity()]).to_fp16()
+            else:
+                learn = self.retrieve_language_model(self.data, config=config, drop_multi_val=self.drop_mult,
+                                                     pretrained_file_paths=self.lm_fns,
+                                                     metrics=[error_rate, accuracy, Perplexity()])
         else:
-            learn = self.retrieve_language_model(self.data, config=config, drop_multi_val=self.drop_mult,
+            if self.is_gpu:
+                learn = self.retrieve_language_model(self.data, config=config, drop_multi_val=self.drop_mult,
                                                  metrics=[error_rate, accuracy, Perplexity()]).to_fp16()
+            else:
+                learn = self.retrieve_language_model(self.data, config=config, drop_multi_val=self.drop_mult,
+                                                     metrics=[error_rate, accuracy, Perplexity()])
 
         optar = partial(DiffGrad, betas=(.91, .999), eps=1e-7)
         learn.opt_func = optar
