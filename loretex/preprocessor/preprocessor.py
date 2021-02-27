@@ -1,3 +1,4 @@
+import os
 import emoji
 
 
@@ -5,8 +6,8 @@ class TextPreProcessor:
     def __init__(self, df, text_name):
         self.df = df
         self.text_name = text_name
-        stopwords = "./sin-stop-words.txt"
-        self.stopwords = [l.strip() for l in open(stopwords)]
+        stopwords_path = os.path.join(os.path.dirname(__file__), 'sin-stop-words.txt')
+        self.stopwords = [l.strip() for l in open(stopwords_path)]
 
     def demojize_text(self, text):
         return emoji.demojize(text)
