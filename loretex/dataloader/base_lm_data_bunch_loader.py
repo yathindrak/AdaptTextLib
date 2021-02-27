@@ -1,6 +1,6 @@
 from ...fastai1.text import *
 from ...fastai1.basics import *
-from .baseDataBunchLoader import BaseDataBunchLoader
+from .base_data_bunch_loader import BaseDataBunchLoader
 
 
 class BaseLMDataBunchLoader(BaseDataBunchLoader):

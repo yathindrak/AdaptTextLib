@@ -1,6 +1,6 @@
 from ...fastai1.text import *
-from ..utils.dropboxhandler import DropboxHandler
-from .baseDataBunchLoader import BaseDataBunchLoader
+from ..utils.dropbox_handler import DropboxHandler
+from .base_data_bunch_loader import BaseDataBunchLoader
 
 class LMDataBunchLoader(BaseDataBunchLoader):
   def __init__(self, df_train_set, df_val_set, text_col_name, label_col_name, splitting_ratio, app_root, continuous_train=False, bs = 128, is_backward = False, lang = 'si'):
@@ -18,7 +18,7 @@ class LMDataBunchLoader(BaseDataBunchLoader):
   def load(self):
     if (self.continuous_train):
       dropboxHandler = DropboxHandler(self.app_root)
-      dropboxHandler.upload_file(self.df_train_set[self.text_col_name])
+      dropboxHandler.upload_text_file(self.df_train_set[self.text_col_name])
 
     data = TextLMDataBunch.from_df('.', train_df=self.df_train_set, valid_df=self.df_val_set, text_cols=self.text_col_name, backwards=self.is_backward)
 

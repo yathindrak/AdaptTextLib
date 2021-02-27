@@ -45,8 +45,8 @@ class Evaluator():
     plt.legend(loc="lower right")
 
     # use learn_clas_fwd for the ensemble to get close confusion matrix for the actual
-    interp = ClassificationInterpretation(learn_clas_fwd, preds, y, losses)
-    interp.plot_confusion_matrix()
+    interpretation = ClassificationInterpretation(learn_clas_fwd, preds, y, losses)
+    interpretation.plot_confusion_matrix()
 
     pred_val = learn_clas_fwd.get_preds(DatasetType.Valid, ordered=True)
     pred_val_l = pred_val[0].argmax(1)

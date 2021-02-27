@@ -4,15 +4,17 @@ from sklearn.model_selection import train_test_split
 from dotenv import load_dotenv
 import os
 
+from .utils.dropbox_handler import DropboxHandler
+from .utils.zip_handler import ZipHandler
 from ..fastai1.basics import *
-from .dataloader.baseLMDataBunchLoader import BaseLMDataBunchLoader
-from .dataloader.classificationDataBunchLoader import ClassificationDataBunchLoader
-from .dataloader.lMDataBunchLoader import LMDataBunchLoader
+from .dataloader.base_lm_data_bunch_loader import BaseLMDataBunchLoader
+from .dataloader.classification_data_bunch_loader import ClassificationDataBunchLoader
+from .dataloader.lm_data_bunch_loader import LMDataBunchLoader
 from .preprocessor.preprocessor import TextPreProcessor
-from .trainer.baseLMTrainer import BaseLMTrainer
-from .trainer.classifierTrainer import ClassifierTrainer
-from .trainer.lMTrainer import LMTrainer
-from .utils.wikihandler import WikiHandler
+from .trainer.base_lm_trainer import BaseLMTrainer
+from .trainer.classifier_trainer import ClassifierTrainer
+from .trainer.lm_trainer import LMTrainer
+from .utils.wiki_handler import WikiHandler
 
 load_dotenv('.env')
 
@@ -31,6 +33,9 @@ class LoReTex:
         self.mdl_path = self.path / 'models'
         self.lm_fns = [self.mdl_path / f'{lang}_wt', self.mdl_path / f'{lang}_wt_vocab']
         self.lm_fns_bwd = [self.mdl_path / f'{lang}_wt_bwd', self.mdl_path / f'{lang}_wt_vocab_bwd']
+        self.lm_store_path = [f'data/{lang}wiki/models/si_wt_vocab.pkl', f'data/{lang}wiki/models/si_wt.pth', f'data/{lang}wiki/models/si_wt_vocab_bwd.pkl', f'data/{lang}wiki/models/si_wt_bwd.pth']
+        self.lm_store_files = ['si_wt_vocab.pkl', 'si_wt.pth', 'si_wt_vocab_bwd.pkl', 'si_wt_bwd.pth']
+        self.classifiers_store_path = ["models/fwd-export.pkl", "models/bwd-export.pkl"]
 
     def setup_wiki_data(self):
         # making required directories
@@ -69,10 +74,24 @@ class LoReTex:
         url = "https://www.dropbox.com/s/cnd985vl1bof50y/test-s.zip?dl=0"
         self.add_external_text(txt_filename, filepath, url)
 
+        dropbox_handler = DropboxHandler(self.data_root)
+        dropbox_handler.download_articles()
+
+    def preparePretrainedLM(self, file_name):
+        # models-test-s-10-epochs-with-cls.zip
+        dropbox_handler = DropboxHandler(self.data_root)
+        dropbox_handler.download_pretrained_model(file_name)
+
+        zip_handler = ZipHandler()
+        zip_handler.unzip(file_name)
+
+        for source in self.lm_store_files:
+            shutil.move(source, self.mdl_path)
+
     def buildBaseLM(self):
         if (not Path(self.base_lm_data_path).exists()):
-            print("Please load the corpus before building base LM")
-            return
+            print("Base LM corpus not found, preparing the corpus...")
+            self.prepareBaseLMCorpus()
 
         baseLMDataBunchLoader = BaseLMDataBunchLoader(self.base_lm_data_path, self.splitting_ratio)
         data_lm_fwd = baseLMDataBunchLoader.load()
@@ -152,3 +171,13 @@ class LoReTex:
         classifierModelBWD = classifierTrainerBwd.train()
 
         return classifierModelFWD, classifierModelBWD, classes
+
+    def store_lm(self, zip_file_name):
+        # zip_file_name = "test.zip"
+        zip_archive = zipfile.ZipFile(zip_file_name, 'w', zipfile.ZIP_DEFLATED)
+        for item in self.lm_store_path:
+            zip_archive.write(item)
+        zip_archive.close()
+
+        dropbox_handler = DropboxHandler(self.data_root)
+        dropbox_handler.upload_zip_file(zip_file_name, f'/loretex/models/{zip_file_name}')
