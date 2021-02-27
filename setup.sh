@@ -11,7 +11,7 @@
 # sudo apt-get install nginx
 
 #commented out below scripts temp
-#mkdir /storage
+mkdir /storage
 mkdir /downloads
 
 # setup instance

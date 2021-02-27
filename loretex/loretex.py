@@ -87,6 +87,7 @@ class LoReTex:
 
     def prepare_pretrained_lm(self, file_name):
         # models-test-s-10-epochs-with-cls.zip
+        shutil.rmtree(f'{os.getcwd()}{self.data_root}')
         dropbox_handler = DropboxHandler(self.data_root)
         dropbox_handler.download_pretrained_model(file_name)
 
@@ -99,7 +100,6 @@ class LoReTex:
                 shutil.rmtree(str(self.mdl_path))
                 os.mkdir(str(self.mdl_path))
             else:
-                os.mkdir(str(self.data_root))
                 os.mkdir(str(self.data_path))
                 os.mkdir(str(self.path))
                 os.mkdir(str(self.mdl_path))
@@ -108,7 +108,7 @@ class LoReTex:
     def build_base_lm(self):
         if (not Path(self.base_lm_data_path).exists()):
             print("Base LM corpus not found, preparing the corpus...")
-            self.prepareBaseLMCorpus()
+            self.prepare_base_lm_corpus()
 
         baseLMDataBunchLoader = BaseLMDataBunchLoader(self.base_lm_data_path, self.splitting_ratio)
         data_lm_fwd = baseLMDataBunchLoader.load()
