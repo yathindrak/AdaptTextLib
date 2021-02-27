@@ -33,8 +33,8 @@ class LoReTex:
         self.mdl_path = self.path / 'models'
         self.lm_fns = [self.mdl_path / f'{lang}_wt', self.mdl_path / f'{lang}_wt_vocab']
         self.lm_fns_bwd = [self.mdl_path / f'{lang}_wt_bwd', self.mdl_path / f'{lang}_wt_vocab_bwd']
-        self.lm_store_path = [f'data/{lang}wiki/models/si_wt_vocab.pkl', f'data/{lang}wiki/models/si_wt.pth',
-                              f'data/{lang}wiki/models/si_wt_vocab_bwd.pkl', f'data/{lang}wiki/models/si_wt_bwd.pth']
+        self.lm_store_path = [f'{data_root}/data/{lang}wiki/models/si_wt_vocab.pkl', f'{data_root}/data/{lang}wiki/models/si_wt.pth',
+                              f'{data_root}/data/{lang}wiki/models/si_wt_vocab_bwd.pkl', f'{data_root}/data/{lang}wiki/models/si_wt_bwd.pth']
         self.lm_store_files = ['si_wt_vocab.pkl', 'si_wt.pth', 'si_wt_vocab_bwd.pkl', 'si_wt_bwd.pth']
         self.classifiers_store_path = ["models/fwd-export.pkl", "models/bwd-export.pkl"]
 
@@ -74,7 +74,7 @@ class LoReTex:
 
         shutil.move(self.data_root + "/" + txt_filename, str(self.base_lm_data_path / txt_filename))
 
-    def prepareBaseLMCorpus(self):
+    def prepare_base_lm_corpus(self):
         print(os.getenv('TUTORIAL_BOT_TOKEN'))
         self.setup_wiki_data()
         txt_filename = "test-s.txt"
@@ -85,7 +85,7 @@ class LoReTex:
         dropbox_handler = DropboxHandler(self.data_root)
         dropbox_handler.download_articles()
 
-    def preparePretrainedLM(self, file_name):
+    def prepare_pretrained_lm(self, file_name):
         # models-test-s-10-epochs-with-cls.zip
         dropbox_handler = DropboxHandler(self.data_root)
         dropbox_handler.download_pretrained_model(file_name)
@@ -94,9 +94,14 @@ class LoReTex:
         zip_handler.unzip(file_name)
 
         for source in self.lm_store_files:
+            source = f'{os.getcwd()}{self.data_root}/data/{self.lang}wiki/models/{source}'
+            if os.path.exists(self.mdl_path):
+                shutil.rmtree(str(self.mdl_path))
+                os.mkdir(str(self.mdl_path))
+
             shutil.move(source, self.mdl_path)
 
-    def buildBaseLM(self):
+    def build_base_lm(self):
         if (not Path(self.base_lm_data_path).exists()):
             print("Base LM corpus not found, preparing the corpus...")
             self.prepareBaseLMCorpus()
@@ -119,7 +124,7 @@ class LoReTex:
         lmTrainer_bwd = BaseLMTrainer(data_lm_bwd, self.lm_fns_bwd, self.mdl_path, model_store_path_bwd, is_gpu=self.is_gpu)
         lmTrainer_bwd.train()
 
-    def buildClassifier(self, df, text_name, label_name, preprocessor=None):
+    def build_classifier(self, df, text_name, label_name, preprocessor=None):
 
         func_names = [f'{func_name}.{extension}' for func_name, extension in zip(self.lm_fns, ['pth', 'pkl'])]
 
