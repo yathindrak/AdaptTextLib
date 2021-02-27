@@ -5,7 +5,7 @@ class TextPreProcessor:
     def __init__(self, df, text_name):
         self.df = df
         self.text_name = text_name
-        stopwords = "sin-stop-words.txt"
+        stopwords = "./sin-stop-words.txt"
         self.stopwords = [l.strip() for l in open(stopwords)]
 
     def demojize_text(self, text):

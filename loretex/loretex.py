@@ -130,7 +130,7 @@ class LoReTex:
         lmTrainer_bwd.train()
 
     def build_classifier(self, df, text_name, label_name, preprocessor=None):
-
+        df = df[[text_name, label_name]]
         func_names = [f'{func_name}.{extension}' for func_name, extension in zip(self.lm_fns, ['pth', 'pkl'])]
 
         if not Path(func_names[0]).exists():
