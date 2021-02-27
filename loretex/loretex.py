@@ -98,7 +98,8 @@ class LoReTex:
             if os.path.exists(self.mdl_path):
                 shutil.rmtree(str(self.mdl_path))
                 os.mkdir(str(self.mdl_path))
-
+            else:
+                os.mkdir(str(self.mdl_path))
             shutil.move(source, self.mdl_path)
 
     def build_base_lm(self):
