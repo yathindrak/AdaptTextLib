@@ -42,6 +42,8 @@ class LoReTex:
             self.is_gpu = False
             warnings.warn(
                 'Note that CUDA support is not available for your instance, Hence training will be continued on CPU')
+        else:
+            self.is_gpu = True
 
     def setup_wiki_data(self):
         # making required directories
