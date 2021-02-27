@@ -48,7 +48,7 @@ class BaseLMTrainer(Trainer):
     def train(self):
         dropout_probs = dict(input=0.25, output=0.1, hidden=0.15, embedding=0.02, weight=0.2)
         size_of_embedding = 400
-        num_of_hidden_neurons = 1200
+        num_of_hidden_neurons = 1550
         num_of_layers = 4
 
         config = dict(emb_sz=size_of_embedding, n_hid=num_of_hidden_neurons, n_layers=num_of_layers,
