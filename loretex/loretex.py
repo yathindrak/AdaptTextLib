@@ -87,7 +87,8 @@ class LoReTex:
 
     def prepare_pretrained_lm(self, file_name):
         # models-test-s-10-epochs-with-cls.zip
-        shutil.rmtree(f'{os.getcwd()}{self.data_root}')
+        if(Path(f'{os.getcwd()}{self.data_root}').exists()):
+            shutil.rmtree(f'{os.getcwd()}{self.data_root}')
         dropbox_handler = DropboxHandler(self.data_root)
         dropbox_handler.download_pretrained_model(file_name)
 
