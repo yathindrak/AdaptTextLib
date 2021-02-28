@@ -96,15 +96,16 @@ class LoReTex:
         zip_handler = ZipHandler()
         zip_handler.unzip(file_name)
 
+        if os.path.exists(self.mdl_path):
+            shutil.rmtree(str(self.mdl_path))
+            os.mkdir(str(self.mdl_path))
+        else:
+            os.mkdir(str(self.data_path))
+            os.mkdir(str(self.path))
+            os.mkdir(str(self.mdl_path))
+        
         for source in self.lm_store_files:
             source = f'{os.getcwd()}{self.data_root}/data/{self.lang}wiki/models/{source}'
-            if os.path.exists(self.mdl_path):
-                shutil.rmtree(str(self.mdl_path))
-                os.mkdir(str(self.mdl_path))
-            else:
-                os.mkdir(str(self.data_path))
-                os.mkdir(str(self.path))
-                os.mkdir(str(self.mdl_path))
             shutil.move(source, self.mdl_path)
 
     def build_base_lm(self):
