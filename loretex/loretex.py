@@ -103,7 +103,7 @@ class LoReTex:
             os.mkdir(str(self.data_path))
             os.mkdir(str(self.path))
             os.mkdir(str(self.mdl_path))
-        
+
         for source in self.lm_store_files:
             source = f'{os.getcwd()}{self.data_root}/data/{self.lang}wiki/models/{source}'
             shutil.move(source, self.mdl_path)
