@@ -17,7 +17,7 @@ class ZipHandler:
 
     def unzip(self, file_name):
         with zipfile.ZipFile(file_name, 'r') as archive:
-            archive.extractall()
+            archive.extractall(".")
 
     def prepare_articles(self, path):
         base_lm_data_path = path / 'articles'

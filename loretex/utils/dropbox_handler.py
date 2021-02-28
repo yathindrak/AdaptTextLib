@@ -71,12 +71,13 @@ class DropboxHandler:
                 print(self.dbx.files_upload(f.read(), file_where_to, mode=WriteMode('overwrite')))
             else:
                 with tqdm(total=file_size_to_upload, desc="Uploaded") as pbar:
-                    upload_session_start_result = self.dbx.files_upload_session_start(
+                    # Start an upload session
+                    dbx_upload_session_begin = self.dbx.files_upload_session_start(
                         f.read(chunk_size_to_upload)
                     )
                     pbar.update(chunk_size_to_upload)
                     cursor = dropbox.files.UploadSessionCursor(
-                        session_id=upload_session_start_result.session_id,
+                        session_id=dbx_upload_session_begin.session_id,
                         offset=f.tell(),
                     )
                     commit = dropbox.files.CommitInfo(path=file_where_to)
