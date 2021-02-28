@@ -79,10 +79,10 @@ class ClassifierTrainer(Trainer):
             learn.fit_one_cycle(11, lr, callbacks=[SaveModelCallback(learn), ReduceLROnPlateauCallback(learn, factor=0.8)])
 
             learn.freeze_to(-3)
-            learn.fit_one_cycle(11, lr, callbacks=[SaveModelCallback(learn), ReduceLROnPlateauCallback(learn, factor=0.8)])
+            learn.fit_one_cycle(10, lr, callbacks=[SaveModelCallback(learn), ReduceLROnPlateauCallback(learn, factor=0.8)])
 
         learn.unfreeze()
-        learn.fit_one_cycle(11, lr, callbacks=[SaveModelCallback(learn), ReduceLROnPlateauCallback(learn, factor=0.8)])
+        learn.fit_one_cycle(10, lr, callbacks=[SaveModelCallback(learn), ReduceLROnPlateauCallback(learn, factor=0.8)])
 
         if self.is_backward:
             learn.save(f'{self.lang}_clas_bwd')
