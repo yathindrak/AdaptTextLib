@@ -16,8 +16,9 @@ class ZipHandler:
         zip_archive.close()
 
     def unzip(self, file_name):
+        current_working_dir = os.getcwd()
         with zipfile.ZipFile(file_name, 'r') as archive:
-            archive.extractall(".")
+            archive.extractall(current_working_dir)
 
     def prepare_articles(self, path):
         base_lm_data_path = path / 'articles'
