@@ -8,8 +8,12 @@ class Evaluator():
     pass
 
   def evaluate_ensemble(self, learn_clas_fwd, learn_clas_bwd):
+
     preds_fw, y_fw, losses_fw = learn_clas_fwd.get_preds(with_loss=True)
     preds_bw, y_bw, losses_bw = learn_clas_bwd.get_preds(with_loss=True)
+
+    if abs(accuracy(preds_fw, y_fw) - accuracy(preds_bw, y_bw) > 10):
+      print("Higher difference between accuracies of fw and bwd models...")
 
     preds = (preds_fw + preds_bw) / 2
     y = (y_fw + y_bw) / 2

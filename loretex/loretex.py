@@ -33,8 +33,10 @@ class LoReTex:
         self.mdl_path = self.path / 'models'
         self.lm_fns = [self.mdl_path / f'{lang}_wt', self.mdl_path / f'{lang}_wt_vocab']
         self.lm_fns_bwd = [self.mdl_path / f'{lang}_wt_bwd', self.mdl_path / f'{lang}_wt_vocab_bwd']
-        self.lm_store_path = [f'{data_root}/data/{lang}wiki/models/si_wt_vocab.pkl', f'{data_root}/data/{lang}wiki/models/si_wt.pth',
-                              f'{data_root}/data/{lang}wiki/models/si_wt_vocab_bwd.pkl', f'{data_root}/data/{lang}wiki/models/si_wt_bwd.pth']
+        self.lm_store_path = [f'{data_root}/data/{lang}wiki/models/si_wt_vocab.pkl',
+                              f'{data_root}/data/{lang}wiki/models/si_wt.pth',
+                              f'{data_root}/data/{lang}wiki/models/si_wt_vocab_bwd.pkl',
+                              f'{data_root}/data/{lang}wiki/models/si_wt_bwd.pth']
         self.lm_store_files = ['si_wt_vocab.pkl', 'si_wt.pth', 'si_wt_vocab_bwd.pkl', 'si_wt_bwd.pth']
         self.classifiers_store_path = ["models/fwd-export.pkl", "models/bwd-export.pkl"]
 
@@ -88,7 +90,7 @@ class LoReTex:
 
     def prepare_pretrained_lm(self, file_name):
         # models-test-s-10-epochs-with-cls.zip
-        if(Path(f'{os.getcwd()}{self.data_root}').exists()):
+        if (Path(f'{os.getcwd()}{self.data_root}').exists()):
             shutil.rmtree(f'{os.getcwd()}{self.data_root}')
         dropbox_handler = DropboxHandler(self.data_root)
         dropbox_handler.download_pretrained_model(file_name)
@@ -128,10 +130,11 @@ class LoReTex:
         lmTrainer_fwd.train()
 
         # backward
-        lmTrainer_bwd = BaseLMTrainer(data_lm_bwd, self.lm_fns_bwd, self.mdl_path, model_store_path_bwd, is_gpu=self.is_gpu)
+        lmTrainer_bwd = BaseLMTrainer(data_lm_bwd, self.lm_fns_bwd, self.mdl_path, model_store_path_bwd,
+                                      is_gpu=self.is_gpu)
         lmTrainer_bwd.train()
 
-    def build_classifier(self, df, text_name, label_name, preprocessor=None):
+    def build_classifier(self, df, text_name, label_name, grad_unfreeze: bool = True, preprocessor=None):
         df = df[[text_name, label_name]]
         func_names = [f'{func_name}.{extension}' for func_name, extension in zip(self.lm_fns, ['pth', 'pkl'])]
 
@@ -179,19 +182,21 @@ class LoReTex:
 
         classes = data_class.classes
 
-        lmTrainerFwd = LMTrainer(data_lm, self.lm_fns, self.mdl_path, custom_model_store_path, False, is_gpu=self.is_gpu)
+        lmTrainerFwd = LMTrainer(data_lm, self.lm_fns, self.mdl_path, custom_model_store_path, False,
+                                 is_gpu=self.is_gpu)
         languageModelFWD = lmTrainerFwd.train()
 
         classifierTrainerFwd = ClassifierTrainer(data_class, self.lm_fns, self.mdl_path, custom_model_store_path, False)
-        classifierModelFWD = classifierTrainerFwd.train()
+        classifierModelFWD = classifierTrainerFwd.train(grad_unfreeze)
 
-        lmTrainerBwd = LMTrainer(data_lm_bwd, self.lm_fns_bwd, self.mdl_path, custom_model_store_path_bwd, True, is_gpu=self.is_gpu)
+        lmTrainerBwd = LMTrainer(data_lm_bwd, self.lm_fns_bwd, self.mdl_path, custom_model_store_path_bwd, True,
+                                 is_gpu=self.is_gpu)
         languageModelBWD = lmTrainerBwd.train()
 
         classifierTrainerBwd = ClassifierTrainer(data_class_bwd, self.lm_fns_bwd, self.mdl_path,
                                                  custom_model_store_path_bwd,
                                                  True)
-        classifierModelBWD = classifierTrainerBwd.train()
+        classifierModelBWD = classifierTrainerBwd.train(grad_unfreeze)
 
         return classifierModelFWD, classifierModelBWD, classes
 

@@ -45,7 +45,7 @@ class ClassifierTrainer(Trainer):
 
         return learn
 
-    def train(self):
+    def train(self, grad_unfreeze=True):
         dropout_probs = dict(input=0.25, output=0.1, hidden=0.15, embedding=0.02, weight=0.2)
         size_of_embedding = 400
         num_of_hidden_neurons = 1550
@@ -74,11 +74,12 @@ class ClassifierTrainer(Trainer):
 
         learn.fit_one_cycle(11, lr, callbacks=[SaveModelCallback(learn), ReduceLROnPlateauCallback(learn, factor=0.8)])
 
-        # learn.freeze_to(-2)
-        # learn.fit_one_cycle(11, lr, callbacks=[SaveModelCallback(learn), ReduceLROnPlateauCallback(learn, factor=0.8)])
+        if grad_unfreeze:
+            learn.freeze_to(-2)
+            learn.fit_one_cycle(11, lr, callbacks=[SaveModelCallback(learn), ReduceLROnPlateauCallback(learn, factor=0.8)])
 
-        # learn.freeze_to(-3)
-        # learn.fit_one_cycle(11, lr, callbacks=[SaveModelCallback(learn), ReduceLROnPlateauCallback(learn, factor=0.8)])
+            learn.freeze_to(-3)
+            learn.fit_one_cycle(11, lr, callbacks=[SaveModelCallback(learn), ReduceLROnPlateauCallback(learn, factor=0.8)])
 
         learn.unfreeze()
         learn.fit_one_cycle(11, lr, callbacks=[SaveModelCallback(learn), ReduceLROnPlateauCallback(learn, factor=0.8)])
