@@ -75,12 +75,12 @@ class LoReTex:
         shutil.move(self.data_root + "/" + txt_filename, str(self.base_lm_data_path / txt_filename))
 
     def prepare_base_lm_corpus(self):
-        # print(os.getenv('TUTORIAL_BOT_TOKEN'))
+        print(os.getenv('TUTORIAL_BOT_TOKEN'))
         self.setup_wiki_data()
-        txt_filename = "half-si-dedup.txt"
-        filepath = Path(self.data_root + "/half-si-dedup.zip")
-        # url = "https://www.dropbox.com/s/cnd985vl1bof50y/test-s.zip?dl=0"
-        url = "https://www.dropbox.com/s/alh6jf4rqxhhzow/half-si-dedup.zip?dl=0"
+        txt_filename = "test-s.txt"
+        filepath = Path(self.data_root + "/test-s.zip")
+        url = "https://www.dropbox.com/s/cnd985vl1bof50y/test-s.zip?dl=0"
+        # url = "https://www.dropbox.com/s/alh6jf4rqxhhzow/half-si-dedup.zip?dl=0"
         self.add_external_text(txt_filename, filepath, url)
 
         dropbox_handler = DropboxHandler(self.data_root)

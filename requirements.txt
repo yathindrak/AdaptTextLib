@@ -14,3 +14,4 @@ spacy==2.3.5
 matplotlib==3.1.1
 # pandas==0.25.0
 scikit-learn==0.24.1
+fastprogress
