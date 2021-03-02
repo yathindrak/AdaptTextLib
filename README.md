@@ -1,1 +1,1 @@
-loretexlib
+adapttext

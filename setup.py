@@ -19,7 +19,7 @@ with open('./requirements.txt') as requirements_file:
 
 # Setting up the library
 setup(
-        name="loretex", 
+        name="AdaptText",
         version=VERSION,
         author="Yathindra Kodithuwakku",
         author_email="yathindrarawya123@gmail.com",

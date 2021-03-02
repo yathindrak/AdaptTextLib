@@ -22,13 +22,13 @@ class DropboxHandler:
         np.savetxt(time_str_fname, df.values, fmt='%d')
 
         file_to_upload = time_str_fname
-        file_where_to = "/loretex/articles/" + time_str_fname
+        file_where_to = "/adapttext/articles/" + time_str_fname
 
         self.upload(file_to_upload, file_where_to)
 
     # Upload the zip file to the destination
     def upload_zip_file(self, local_zip_path, destination_path):
-        # file_where_to = "/loretex/models/" + file_name
+        # file_where_to = "/adapttext/models/" + file_name
         self.upload(local_zip_path, destination_path)
 
     def download_articles(self):
@@ -36,11 +36,11 @@ class DropboxHandler:
         if not Path(articles_path).exists():
             raise Exception("Wiki articles are not downloaded..")
 
-        response = self.dbx.files_list_folder("/loretex/articles")
+        response = self.dbx.files_list_folder("/adapttext/articles")
         files_list = []
         dest_file_paths = []
         for file in response.entries:
-            file_name = "/loretex/articles/" + file.name
+            file_name = "/adapttext/articles/" + file.name
             metadata, res = self.dbx.files_download(file_name)
             f_down_content = res.content
 
@@ -56,7 +56,7 @@ class DropboxHandler:
             shutil.move(source, destination)
 
     def download_pretrained_model(self, zip_file_name):
-        file_from = f'/loretex/models/{zip_file_name}'
+        file_from = f'/adapttext/models/{zip_file_name}'
 
         with open(zip_file_name, "wb") as f:
             metadata, res = self.dbx.files_download(file_from)

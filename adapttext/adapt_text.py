@@ -1,9 +1,5 @@
 import zipfile
-
 from sklearn.model_selection import train_test_split
-from dotenv import load_dotenv
-import os
-
 from .utils.dropbox_handler import DropboxHandler
 from .utils.zip_handler import ZipHandler
 from ..fastai1.basics import *
@@ -16,10 +12,8 @@ from .trainer.classifier_trainer import ClassifierTrainer
 from .trainer.lm_trainer import LMTrainer
 from .utils.wiki_handler import WikiHandler
 
-load_dotenv('.env')
 
-
-class LoReTex:
+class AdaptText:
     def __init__(self, lang, data_root, bs=128, splitting_ratio=0.1):
         self.lang = lang
         self.data_root = data_root
@@ -207,4 +201,4 @@ class LoReTex:
         zip_archive.close()
 
         dropbox_handler = DropboxHandler(self.data_root)
-        dropbox_handler.upload_zip_file(zip_file_name, f'/loretex/models/{zip_file_name}')
+        dropbox_handler.upload_zip_file(zip_file_name, f'/adapttext/models/{zip_file_name}')
