@@ -88,7 +88,7 @@ class LMTrainer(Trainer):
                             callbacks=[SaveModelCallback(learn), ReduceLROnPlateauCallback(learn, factor=0.8)])
 
         learn.unfreeze()
-        learn.fit_one_cycle(11, lr, moms=(0.8, 0.7),
+        learn.fit_one_cycle(8, lr, moms=(0.8, 0.7),
                             callbacks=[SaveModelCallback(learn), ReduceLROnPlateauCallback(learn, factor=0.8)])
 
         learn.predict("මේ අතර", n_words=30)

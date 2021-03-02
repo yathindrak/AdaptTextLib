@@ -77,7 +77,6 @@ class LoReTex:
         shutil.move(self.data_root + "/" + txt_filename, str(self.base_lm_data_path / txt_filename))
 
     def prepare_base_lm_corpus(self):
-        print(os.getenv('TUTORIAL_BOT_TOKEN'))
         self.setup_wiki_data()
         txt_filename = "test-s.txt"
         filepath = Path(self.data_root + "/test-s.zip")
