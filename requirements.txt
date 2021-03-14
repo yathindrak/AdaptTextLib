@@ -17,3 +17,4 @@ scikit-learn==0.24.1
 fastprogress
 scipy==1.6.1
 sklearn
+pandas==1.2.3

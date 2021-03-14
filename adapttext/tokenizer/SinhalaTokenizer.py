@@ -1,4 +1,4 @@
-from ..fastai1.text import BaseTokenizer, List
+from ...fastai1.text import BaseTokenizer, List
 import sentencepiece as spm
 
 
