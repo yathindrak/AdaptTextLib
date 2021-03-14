@@ -108,6 +108,7 @@ class AdaptText:
         else:
             os.mkdir(str(self.data_path))
             os.mkdir(str(self.path))
+            os.mkdir(str(self.mdl_path))
             os.mkdir(str(self.base_lm_data_path))
             os.mkdir(str(f'{self.base_lm_data_path}/tmp/'))
 
@@ -150,7 +151,7 @@ class AdaptText:
         func_names = [f'{func_name}.{extension}' for func_name, extension in zip(self.lm_fns, ['pth', 'pkl'])]
 
         if not Path(func_names[0]).exists():
-            return
+            raise Exception("Base LM does not exists, please load pretrained model")
 
         custom_model_store_path = self.mdl_path / Path(f'{self.lang}_lm_wt_vocab.pkl')
         custom_model_store_path_bwd = self.mdl_path / Path(f'{self.lang}_lm_wt_vocab_bwd.pkl')

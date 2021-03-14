@@ -3,7 +3,7 @@ import sentencepiece as spm
 
 
 class SinhalaTokenizer(BaseTokenizer):
-    def __init__(self):
+    def __init__(self, lang: str):
         self.lang = 'si'
         self.sp = spm.SentencePieceProcessor()
         self.sp.Load(str("/storage/data/siwiki/articles/tmp/spm.model"))
