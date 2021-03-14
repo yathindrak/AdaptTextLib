@@ -21,4 +21,4 @@ class TextPreProcessor:
         self.df.dropna()
         self.df[self.text_name] = self.df[self.text_name].apply(self.remove_stop_words)
         self.df[self.text_name] = self.df[self.text_name].apply(self.demojize_text)
-        return self.df
+
