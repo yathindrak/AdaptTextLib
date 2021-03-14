@@ -103,10 +103,13 @@ class AdaptText:
         if os.path.exists(self.mdl_path):
             shutil.rmtree(str(self.mdl_path))
             os.mkdir(str(self.mdl_path))
+            os.mkdir(str(self.base_lm_data_path))
+            os.mkdir(str(self.base_lm_data_path+"/tmp"))
         else:
             os.mkdir(str(self.data_path))
             os.mkdir(str(self.path))
-            os.mkdir(str(self.mdl_path))
+            os.mkdir(str(self.base_lm_data_path))
+            os.mkdir(str(self.base_lm_data_path + "/tmp"))
 
         for source in self.lm_store_files:
             source = f'{os.getcwd()}{self.data_root}/data/{self.lang}wiki/models/{source}'
