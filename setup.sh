@@ -10,7 +10,7 @@
 mkdir /storage
 mkdir /downloads
 
-yarn build
+#yarn build
 
 # setup instance
 #commented out below scripts temp
@@ -33,9 +33,9 @@ cd api
 #python3 -m venv venv
 #source venv/bin/activate
 
-python3 -m venv env
-#venv\Scripts\activate
-source env/bin/activate
+#python3 -m venv env
+##venv\Scripts\activate
+#source env/bin/activate
 
 pip3 install -r requirements.txt
 
