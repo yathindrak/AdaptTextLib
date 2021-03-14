@@ -13,7 +13,7 @@ class BaseLMDataBunchLoader(BaseDataBunchLoader):
         self.lang = lang
 
     def load(self):
-        data = (TextList.from_folder(Path(self.path), processor=[OpenFileProcessor(), SPProcessor()])
+        data = (TextList.from_folder(Path(self.path), processor=[OpenFileProcessor(), SPProcessor(model_type='bpe', max_vocab_sz=30000)])
                 .split_by_rand_pct(self.splitting_ratio, seed=self.seed)
                 .label_for_lm()
                 .databunch(bs=self.bs, num_workers=1, backwards=self.is_backward))

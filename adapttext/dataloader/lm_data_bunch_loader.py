@@ -1,6 +1,8 @@
 from ...fastai1.text import *
+from ..tokenizer.SinhalaTokenizer import SinhalaTokenizer
 from ..utils.dropbox_handler import DropboxHandler
 from .base_data_bunch_loader import BaseDataBunchLoader
+import sentencepiece as spm
 
 
 class LMDataBunchLoader(BaseDataBunchLoader):
@@ -22,8 +24,17 @@ class LMDataBunchLoader(BaseDataBunchLoader):
             dropbox_handler = DropboxHandler(self.app_root)
             dropbox_handler.upload_text_file(self.df_train_set[self.text_col_name])
 
+        sp = spm.SentencePieceProcessor()
+        sp.Load(str("/storage/data/siwiki/articles/tmp/spm.model"))
+        itos = [sp.IdToPiece(int(i)) for i in range(30000)]
+
+        si_sp_vocab = Vocab(itos)
+
+        tokenizer = Tokenizer(tok_func=SinhalaTokenizer)
+
         data = TextLMDataBunch.from_df('.', train_df=self.df_train_set, valid_df=self.df_val_set,
-                                       text_cols=self.text_col_name, backwards=self.is_backward)
+                                       text_cols=self.text_col_name, tokenizer=tokenizer, vocab=si_sp_vocab,
+                                       backwards=self.is_backward)
 
         if self.is_backward:
             data.save(f'{self.lang}_data_lm_bwd.pkl')

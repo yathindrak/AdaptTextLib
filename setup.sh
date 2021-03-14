@@ -4,15 +4,13 @@
 
 #sudo apt-get install python3-venv
 
-#python3 -m venv venv
-#venv\Scripts\activate
-#source venv/bin/activate
-
 # sudo apt-get install nginx
 
 #commented out below scripts temp
 mkdir /storage
 mkdir /downloads
+
+yarn build
 
 # setup instance
 #commented out below scripts temp
@@ -30,12 +28,18 @@ apt update
 #sudo apt update
 
 # setup libs for the app
-#cd api
+cd api
 
 #python3 -m venv venv
 #source venv/bin/activate
 
+python3 -m venv env
+#venv\Scripts\activate
+source env/bin/activate
+
 pip3 install -r requirements.txt
+
+cp ./adapttext.service /etc/systemd/system/adapttext.service
 
 mkdir ./adapttext/optimizer
 git clone https://gitlab.com/yathindra/fastai1.git
