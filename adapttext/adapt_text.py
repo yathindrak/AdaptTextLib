@@ -1,4 +1,5 @@
 import zipfile
+import requests
 from sklearn.model_selection import train_test_split
 from .utils.dropbox_handler import DropboxHandler
 from .utils.zip_handler import ZipHandler
@@ -72,10 +73,14 @@ class AdaptText:
 
     def prepare_base_lm_corpus(self):
         self.setup_wiki_data()
-        txt_filename = "test-s.txt"
-        filepath = Path(self.data_root + "/test-s.zip")
-        url = "https://www.dropbox.com/s/cnd985vl1bof50y/test-s.zip?dl=0"
-        # url = "https://www.dropbox.com/s/alh6jf4rqxhhzow/half-si-dedup.zip?dl=0"
+        # txt_filename = "test-s.txt"
+        # filepath = Path(self.data_root + "/test-s.zip")
+        # url = "https://www.dropbox.com/s/cnd985vl1bof50y/test-s.zip?dl=0"
+
+        txt_filename = "half-si-dedup.txt"
+        filepath = Path(self.data_root + "/half-si-dedup.zip")
+        url = "https://www.dropbox.com/s/alh6jf4rqxhhzow/half-si-dedup.zip?dl=0"
+
         self.add_external_text(txt_filename, filepath, url)
 
         dropbox_handler = DropboxHandler(self.data_root)
