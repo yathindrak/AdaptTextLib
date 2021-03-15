@@ -82,9 +82,9 @@ class ClassifierTrainer(Trainer):
             learn.fit_one_cycle(8, lr, callbacks=[SaveModelCallback(learn), ReduceLROnPlateauCallback(learn, factor=0.8)])
 
         learn.unfreeze()
-        learn.fit_one_cycle(8, lr, callbacks=[SaveModelCallback(learn, every='improvement', monitor='accuracy'),
+        learn.fit_one_cycle(8, lr, callbacks=[SaveModelCallback(learn),
                                               ReduceLROnPlateauCallback(learn, factor=0.8)])
-        learn.fit_one_cycle(8, lr, callbacks=[SaveModelCallback(learn, every='improvement', monitor='accuracy'),
+        learn.fit_one_cycle(4, lr, callbacks=[SaveModelCallback(learn, every='improvement', monitor='accuracy'),
                                               ReduceLROnPlateauCallback(learn, factor=0.8)])
 
         if self.is_backward:

@@ -1,8 +1,6 @@
 from ...fastai1.text import *
-# from ..tokenizer.SinhalaTokenizer import SinhalaTokenizer
 from ..utils.dropbox_handler import DropboxHandler
 from .base_data_bunch_loader import BaseDataBunchLoader
-import sentencepiece as spm
 
 
 class LMDataBunchLoader(BaseDataBunchLoader):

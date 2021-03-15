@@ -32,8 +32,6 @@ class AdaptText:
                               f'{data_root}/data/{lang}wiki/models/si_wt.pth',
                               f'{data_root}/data/{lang}wiki/models/si_wt_vocab_bwd.pkl',
                               f'{data_root}/data/{lang}wiki/models/si_wt_bwd.pth']
-        self.spm_store_path = [f'{self.base_lm_data_path}/tmp/spm.model',
-                               f'{self.base_lm_data_path}/tmp/spm.vocab']
         self.lm_store_files = ['si_wt_vocab.pkl', 'si_wt.pth', 'si_wt_vocab_bwd.pkl', 'si_wt_bwd.pth']
         self.classifiers_store_path = ["models/fwd-export.pkl", "models/bwd-export.pkl"]
 
@@ -88,39 +86,29 @@ class AdaptText:
         dropbox_handler = DropboxHandler(self.data_root)
         dropbox_handler.download_articles()
 
-    def prepare_pretrained_lm(self, model_file_name, spm_file_name):
+    def prepare_pretrained_lm(self, model_file_name):
         # models-test-s-10-epochs-with-cls.zip
         if (Path(f'{os.getcwd()}{self.data_root}').exists()):
             shutil.rmtree(f'{os.getcwd()}{self.data_root}')
         dropbox_handler = DropboxHandler(self.data_root)
         dropbox_handler.download_pretrained_model(model_file_name)
-        dropbox_handler.download_pretrained_model(spm_file_name)
 
         zip_handler = ZipHandler()
         zip_handler.unzip(model_file_name)
-        zip_handler.unzip(spm_file_name)
 
         if os.path.exists(self.mdl_path):
             shutil.rmtree(str(self.mdl_path))
             os.mkdir(str(self.mdl_path))
             os.mkdir(str(self.base_lm_data_path))
-            os.mkdir(str(f'{self.base_lm_data_path}/tmp/'))
         else:
             os.mkdir(str(self.data_path))
             os.mkdir(str(self.path))
             os.mkdir(str(self.mdl_path))
             os.mkdir(str(self.base_lm_data_path))
-            os.mkdir(str(f'{self.base_lm_data_path}/tmp/'))
 
         for source in self.lm_store_files:
             source = f'{os.getcwd()}{self.data_root}/data/{self.lang}wiki/models/{source}'
             shutil.move(source, self.mdl_path)
-
-        spm_paths = ['spm.model', 'spm.vocab']
-
-        for source in spm_paths:
-            source = f'{os.getcwd()}{self.base_lm_data_path}/tmp/{source}'
-            shutil.move(source, f'{self.base_lm_data_path}/tmp/')
 
     def build_base_lm(self):
         if (not Path(self.base_lm_data_path).exists()):
@@ -222,12 +210,3 @@ class AdaptText:
         dropbox_handler = DropboxHandler(self.data_root)
         dropbox_handler.upload_zip_file(zip_file_name, f'/adapttext/models/{zip_file_name}')
 
-    def store_sentencepiece_model(self, zip_file_name):
-        # zip_file_name = "test.zip"
-        zip_archive = zipfile.ZipFile(zip_file_name, 'w', zipfile.ZIP_DEFLATED)
-        for item in self.spm_store_path:
-            zip_archive.write(item)
-        zip_archive.close()
-
-        dropbox_handler = DropboxHandler(self.data_root)
-        dropbox_handler.upload_zip_file(zip_file_name, f'/adapttext/models/{zip_file_name}')
