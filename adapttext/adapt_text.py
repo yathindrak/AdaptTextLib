@@ -184,13 +184,13 @@ class AdaptText:
                                                                       self.splitting_ratio, vocab)
         data_class = classificationDataBunchLoader.load()
 
-        data_class.show_batch()
+        print(data_class.show_batch())
 
         classificationDataBunchLoaderBwd = ClassificationDataBunchLoader(df_trn, df_val, text_name, label_name,
                                                                          self.splitting_ratio, vocab, is_backward=True)
         data_class_bwd = classificationDataBunchLoaderBwd.load()
 
-        data_class_bwd.show_batch()
+        print(data_class_bwd.show_batch())
 
         classes = data_class.classes
 
