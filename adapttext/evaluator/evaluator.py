@@ -1,6 +1,6 @@
 from ...fastai1.text import TextClassificationInterpretation
 from ...fastai1.basics import *
-from sklearn.metrics import classification_report
+from sklearn.metrics import classification_report, matthews_corrcoef
 from sklearn.metrics import roc_curve, auc
 
 class Evaluator():
@@ -56,6 +56,9 @@ class Evaluator():
     pred_val_l = pred_val[0].argmax(1)
 
     print(classification_report(pred_val[1], pred_val_l))
+
+    print("--Mathews Correlation Coefficient--")
+    print(matthews_corrcoef(pred_val[1], pred_val_l))
 
 
   def evaluate(self, learn):

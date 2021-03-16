@@ -7,7 +7,8 @@ from ..optimizer.DiffGradOptimizer import DiffGrad
 
 
 class LMTrainer(Trainer):
-    def __init__(self, data, lm_fns, mdl_path, model_store_path, is_backward=False, drop_mult=0.9, is_gpu=True, lang='si'):
+    def __init__(self, data, lm_fns, mdl_path, model_store_path, is_backward=False, drop_mult=0.9, is_gpu=True,
+                 lang='si'):
         self.data = data
         self.lm_fns = lm_fns
         self.mdl_path = mdl_path
@@ -63,8 +64,8 @@ class LMTrainer(Trainer):
         if ((not self.is_backward and lm_fn_1_fwd.exists()) or (self.is_backward and lm_fn_1_bwd.exists())):
             if self.is_gpu:
                 learn = self.retrieve_language_model(self.data, config=config, drop_multi_val=self.drop_mult,
-                                                 pretrained_file_paths=self.lm_fns,
-                                                 metrics=[error_rate, accuracy, Perplexity()]).to_fp16()
+                                                     pretrained_file_paths=self.lm_fns,
+                                                     metrics=[error_rate, accuracy, Perplexity()]).to_fp16()
             else:
                 learn = self.retrieve_language_model(self.data, config=config, drop_multi_val=self.drop_mult,
                                                      pretrained_file_paths=self.lm_fns,
@@ -72,7 +73,7 @@ class LMTrainer(Trainer):
         else:
             if self.is_gpu:
                 learn = self.retrieve_language_model(self.data, config=config, drop_multi_val=self.drop_mult,
-                                                 metrics=[error_rate, accuracy, Perplexity()]).to_fp16()
+                                                     metrics=[error_rate, accuracy, Perplexity()]).to_fp16()
             else:
                 learn = self.retrieve_language_model(self.data, config=config, drop_multi_val=self.drop_mult,
                                                      metrics=[error_rate, accuracy, Perplexity()])
@@ -85,11 +86,13 @@ class LMTrainer(Trainer):
         lr = tuner.find_optimized_lr()
 
         learn.fit_one_cycle(2, lr, moms=(0.8, 0.7),
-                            callbacks=[SaveModelCallback(learn), ReduceLROnPlateauCallback(learn, factor=0.8)])
+                            callbacks=[SaveModelCallback(learn, monitor='error_rate', mode='min'),
+                                       ReduceLROnPlateauCallback(learn, factor=0.8)])
 
         learn.unfreeze()
         learn.fit_one_cycle(8, lr, moms=(0.8, 0.7),
-                            callbacks=[SaveModelCallback(learn), ReduceLROnPlateauCallback(learn, factor=0.8)])
+                            callbacks=[SaveModelCallback(learn, monitor='error_rate', mode='min'),
+                                       ReduceLROnPlateauCallback(learn, factor=0.8)])
 
         learn.predict("මේ අතර", n_words=30)
 
