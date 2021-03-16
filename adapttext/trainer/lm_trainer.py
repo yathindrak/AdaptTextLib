@@ -86,12 +86,12 @@ class LMTrainer(Trainer):
         lr = tuner.find_optimized_lr()
 
         learn.fit_one_cycle(2, lr, moms=(0.8, 0.7),
-                            callbacks=[SaveModelCallback(learn, monitor='error_rate'),
+                            callbacks=[SaveModelCallback(learn),
                                        ReduceLROnPlateauCallback(learn, factor=0.8)])
 
         learn.unfreeze()
         learn.fit_one_cycle(8, lr, moms=(0.8, 0.7),
-                            callbacks=[SaveModelCallback(learn, monitor='error_rate'),
+                            callbacks=[SaveModelCallback(learn),
                                        ReduceLROnPlateauCallback(learn, factor=0.8)])
 
         learn.predict("මේ අතර", n_words=30)
