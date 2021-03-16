@@ -87,9 +87,11 @@ class ClassifierTrainer(Trainer):
                                            ReduceLROnPlateauCallback(learn, factor=0.8)])
 
         learn.unfreeze()
-        learn.fit_one_cycle(8, max_lr=slice(3e-5, 3e-4), callbacks=[SaveModelCallback(learn),
+        learn.fit_one_cycle(8, lr, callbacks=[SaveModelCallback(learn),
                                                                     ReduceLROnPlateauCallback(learn, factor=0.8)])
-        learn.fit_one_cycle(4, max_lr=slice(3e-5, 3e-4),
+        learn.fit_one_cycle(8, max_lr=slice(lr/3, lr/2), callbacks=[SaveModelCallback(learn),
+                                                                    ReduceLROnPlateauCallback(learn, factor=0.8)])
+        learn.fit_one_cycle(4, max_lr=slice(lr/3, lr/2),
                             callbacks=[SaveModelCallback(learn, every='improvement', monitor='accuracy'),
                                        ReduceLROnPlateauCallback(learn, factor=0.8)])
 
