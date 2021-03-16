@@ -77,9 +77,14 @@ class AdaptText:
         # filepath = Path(self.data_root + "/test-s.zip")
         # url = "https://www.dropbox.com/s/cnd985vl1bof50y/test-s.zip?dl=0"
 
-        txt_filename = "half-si-dedup.txt"
-        filepath = Path(self.data_root + "/half-si-dedup.zip")
-        url = "https://www.dropbox.com/s/alh6jf4rqxhhzow/half-si-dedup.zip?dl=0"
+        # txt_filename = "half-si-dedup.txt"
+        # filepath = Path(self.data_root + "/half-si-dedup.zip")
+        # url = "https://www.dropbox.com/s/alh6jf4rqxhhzow/half-si-dedup.zip?dl=0"
+
+        txt_filename = "si_dedup.txt"
+        filepath = Path(self.data_root + "/si_dedup.txt.zip")
+
+        url = "https://www.dropbox.com/s/sa8jqah8x9p4q2l/si_dedup.txt.zip?dl=0"
 
         self.add_external_text(txt_filename, filepath, url)
 
