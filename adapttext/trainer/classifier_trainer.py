@@ -1,6 +1,6 @@
 from ...fastai1.text import *
 from ...fastai1.basics import *
-from ...fastai1.callbacks import SaveModelCallback, ReduceLROnPlateauCallback
+from ...fastai1.callbacks import SaveModelCallback, ReduceLROnPlateauCallback, OverSamplingCallback
 from ..hyperparameter.tuner import HyperParameterTuner
 from .trainer import Trainer
 from ..optimizer.DiffGradOptimizer import DiffGrad
@@ -72,27 +72,27 @@ class ClassifierTrainer(Trainer):
         tuner = HyperParameterTuner(learn)
         lr = tuner.find_optimized_lr()
 
-        learn.fit_one_cycle(12, lr, callbacks=[SaveModelCallback(learn),
+        learn.fit_one_cycle(12, lr, callbacks=[SaveModelCallback(learn), partial(OverSamplingCallback),
                                                ReduceLROnPlateauCallback(learn, factor=0.8)])
 
         if grad_unfreeze:
             learn.freeze_to(-2)
             learn.fit_one_cycle(8, lr,
-                                callbacks=[SaveModelCallback(learn),
+                                callbacks=[SaveModelCallback(learn), partial(OverSamplingCallback),
                                            ReduceLROnPlateauCallback(learn, factor=0.8)])
 
             learn.freeze_to(-3)
             learn.fit_one_cycle(6, lr,
-                                callbacks=[SaveModelCallback(learn),
+                                callbacks=[SaveModelCallback(learn), partial(OverSamplingCallback),
                                            ReduceLROnPlateauCallback(learn, factor=0.8)])
 
         learn.unfreeze()
         tuner = HyperParameterTuner(learn)
         lr = tuner.find_optimized_lr()
-        learn.fit_one_cycle(6, lr, callbacks=[SaveModelCallback(learn),
-                                                                    ReduceLROnPlateauCallback(learn, factor=0.8)])
-        learn.fit_one_cycle(6, lr/2, callbacks=[SaveModelCallback(learn),
-                                                                    ReduceLROnPlateauCallback(learn, factor=0.8)])
+        learn.fit_one_cycle(6, lr, callbacks=[SaveModelCallback(learn), partial(OverSamplingCallback),
+                                              ReduceLROnPlateauCallback(learn, factor=0.8)])
+        learn.fit_one_cycle(6, lr / 2, callbacks=[SaveModelCallback(learn), partial(OverSamplingCallback),
+                                                  ReduceLROnPlateauCallback(learn, factor=0.8)])
         learn.fit_one_cycle(8, lr,
                             callbacks=[SaveModelCallback(learn, every='improvement', monitor='accuracy'),
                                        ReduceLROnPlateauCallback(learn, factor=0.8)])
