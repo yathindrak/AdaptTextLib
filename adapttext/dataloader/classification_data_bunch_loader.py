@@ -20,7 +20,7 @@ class ClassificationDataBunchLoader(BaseDataBunchLoader):
         print(item_counts)
         self.df_train_set[self.label_col_name].value_counts().plot.bar(rot=30)
 
-        tokenizer = Tokenizer(SpacyTokenizer)
+        tokenizer = Tokenizer(SpacyTokenizer, lang="xx")
 
         data = TextClasDataBunch.from_df('.', train_df=self.df_train_set, valid_df=self.df_val_set, vocab=self.vocab,
                                          bs=32, text_cols=self.text_col_name, label_cols=self.label_col_name,

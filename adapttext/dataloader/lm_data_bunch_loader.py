@@ -30,7 +30,7 @@ class LMDataBunchLoader(BaseDataBunchLoader):
 
         # tokenizer = Tokenizer(tok_func=SinhalaTokenizer)
 
-        tokenizer = Tokenizer(SpacyTokenizer)
+        tokenizer = Tokenizer(SpacyTokenizer, lang="xx")
 
         data = TextLMDataBunch.from_df('.', train_df=self.df_train_set, valid_df=self.df_val_set,
                                        text_cols=self.text_col_name, tokenizer=tokenizer,
