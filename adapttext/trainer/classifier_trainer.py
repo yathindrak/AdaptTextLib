@@ -74,29 +74,29 @@ class ClassifierTrainer(Trainer):
         lr = tuner.find_optimized_lr()
 
         learn.fit_one_cycle(12, lr, callbacks=[SaveModelCallback(learn), OverSamplingCallback(learn),
-                                               ReduceLROnPlateauCallback(learn, factor=0.8, patience=4)])
+                                               ReduceLROnPlateauCallback(learn, factor=0.8)])
 
         if grad_unfreeze:
             learn.freeze_to(-2)
             learn.fit_one_cycle(8, lr,
                                 callbacks=[SaveModelCallback(learn), OverSamplingCallback(learn),
-                                           ReduceLROnPlateauCallback(learn, factor=0.8, patience=4)])
+                                           ReduceLROnPlateauCallback(learn, factor=0.8)])
 
             learn.freeze_to(-3)
             learn.fit_one_cycle(6, lr,
                                 callbacks=[SaveModelCallback(learn), OverSamplingCallback(learn),
-                                           ReduceLROnPlateauCallback(learn, factor=0.8, patience=4)])
+                                           ReduceLROnPlateauCallback(learn, factor=0.8)])
 
         learn.unfreeze()
         tuner = HyperParameterTuner(learn)
         lr = tuner.find_optimized_lr()
         learn.fit_one_cycle(6, lr, callbacks=[SaveModelCallback(learn), OverSamplingCallback(learn),
-                                              ReduceLROnPlateauCallback(learn, factor=0.8, patience=4)])
+                                              ReduceLROnPlateauCallback(learn, factor=0.8)])
         learn.fit_one_cycle(6, lr / 2, callbacks=[SaveModelCallback(learn), OverSamplingCallback(learn),
-                                                  ReduceLROnPlateauCallback(learn, factor=0.8, patience=4)])
+                                                  ReduceLROnPlateauCallback(learn, factor=0.8)])
         learn.fit_one_cycle(8, lr,
                             callbacks=[SaveModelCallback(learn, every='improvement', monitor='accuracy'), OverSamplingCallback(learn),
-                                       ReduceLROnPlateauCallback(learn, factor=0.8, patience=4)])
+                                       ReduceLROnPlateauCallback(learn, factor=0.8)])
 
         if self.is_backward:
             learn.save(f'{self.lang}_clas_bwd')
