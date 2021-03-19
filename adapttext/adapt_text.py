@@ -201,7 +201,7 @@ class AdaptText:
         classifierFWDAccuracy = eval.get_accuracy(classifierModelFWD)
         classifierFWDAccuracyNew = 0
 
-        if(classifierFWDAccuracy.item() < 55.0):
+        if(classifierFWDAccuracy.item() < 53.0):
             classifierTrainerFwd = ClassifierTrainer(data_class, self.lm_fns, self.mdl_path, custom_model_store_path,
                                                      False)
             classifierModelFWDNew = classifierTrainerFwd.train(grad_unfreeze)
@@ -223,7 +223,7 @@ class AdaptText:
         classifierBWDAccuracy = eval.get_accuracy(classifierModelBWD)
         classifierBWDAccuracyNew = 0
 
-        if (classifierBWDAccuracy.item() < 55.0):
+        if (classifierBWDAccuracy.item() < 53.0):
             classifierTrainerBwd = ClassifierTrainer(data_class, self.lm_fns, self.mdl_path, custom_model_store_path,
                                                      False)
             classifierModelBWDNew = classifierTrainerBwd.train(grad_unfreeze)
