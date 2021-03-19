@@ -1,3 +1,4 @@
+from ..evaluator.evaluator import Evaluator
 from ...fastai1.text import *
 from ...fastai1.basics import *
 from ...fastai1.callbacks import SaveModelCallback, ReduceLROnPlateauCallback, OverSamplingCallback
@@ -75,6 +76,12 @@ class ClassifierTrainer(Trainer):
         learn.fit_one_cycle(12, lr, callbacks=[SaveModelCallback(learn), OverSamplingCallback(learn),
                                                ReduceLROnPlateauCallback(learn, factor=0.8)])
 
+        # store model temporarily
+        classifier_initial = learn
+
+        evaluator = Evaluator()
+        classifier_initial_accuracy = evaluator.get_accuracy(classifier_initial).item()
+
         if grad_unfreeze:
             learn.freeze_to(-2)
             learn.fit_one_cycle(8, lr,
@@ -85,6 +92,15 @@ class ClassifierTrainer(Trainer):
             learn.fit_one_cycle(6, lr,
                                 callbacks=[SaveModelCallback(learn), OverSamplingCallback(learn),
                                            ReduceLROnPlateauCallback(learn, factor=0.8)])
+
+            classifier_grad_unfrozen_accuracy = evaluator.get_accuracy(learn).item()
+
+            if classifier_grad_unfrozen_accuracy < classifier_initial_accuracy:
+                learn = classifier_initial
+            else:
+                classifier_initial = learn
+                classifier_initial_accuracy = classifier_grad_unfrozen_accuracy
+
 
         learn.unfreeze()
         tuner = HyperParameterTuner(learn)
@@ -97,6 +113,11 @@ class ClassifierTrainer(Trainer):
                             callbacks=[SaveModelCallback(learn, every='improvement', monitor='accuracy'), OverSamplingCallback(learn),
                                        ReduceLROnPlateauCallback(learn, factor=0.8)])
 
+        classifier_unfrozen_accuracy = evaluator.get_accuracy(learn).item()
+
+        if classifier_unfrozen_accuracy < classifier_initial_accuracy:
+            learn = classifier_initial
+        #
         if self.is_backward:
             learn.save(f'{self.lang}_clas_bwd')
         else:
