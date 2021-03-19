@@ -190,6 +190,8 @@ class AdaptText:
 
         classes = data_class.classes
 
+        print('Training Forward model...')
+
         lmTrainerFwd = LMTrainer(data_lm, self.lm_fns, self.mdl_path, custom_model_store_path, False,
                                  is_gpu=self.is_gpu)
         languageModelFWD = lmTrainerFwd.train()
@@ -197,18 +199,20 @@ class AdaptText:
         classifierTrainerFwd = ClassifierTrainer(data_class, self.lm_fns, self.mdl_path, custom_model_store_path, False)
         classifierModelFWD = classifierTrainerFwd.train(grad_unfreeze)
 
-        eval = Evaluator()
-        classifierFWDAccuracy = eval.get_accuracy(classifierModelFWD)
-        classifierFWDAccuracyNew = 0
+        # eval = Evaluator()
+        # classifierFWDAccuracy = eval.get_accuracy(classifierModelFWD)
+        # classifierFWDAccuracyNew = 0
 
-        if(classifierFWDAccuracy.item() < 53.0):
-            classifierTrainerFwd = ClassifierTrainer(data_class, self.lm_fns, self.mdl_path, custom_model_store_path,
-                                                     False)
-            classifierModelFWDNew = classifierTrainerFwd.train(grad_unfreeze)
-            classifierFWDAccuracyNew = eval.get_accuracy(classifierModelFWD)
+        # if(classifierFWDAccuracy.item() < 53.0):
+        #     classifierTrainerFwd = ClassifierTrainer(data_class, self.lm_fns, self.mdl_path, custom_model_store_path,
+        #                                              False)
+        #     classifierModelFWDNew = classifierTrainerFwd.train(grad_unfreeze)
+        #     classifierFWDAccuracyNew = eval.get_accuracy(classifierModelFWD)
+        #
+        # if (classifierFWDAccuracyNew.item() > classifierFWDAccuracy.item()):
+        #     classifierModelFWD = classifierModelFWDNew
 
-        if (classifierFWDAccuracyNew.item() > classifierFWDAccuracy.item()):
-            classifierModelFWD = classifierModelFWDNew
+        print('Training Backward model...')
 
         lmTrainerBwd = LMTrainer(data_lm_bwd, self.lm_fns_bwd, self.mdl_path, custom_model_store_path_bwd, True,
                                  is_gpu=self.is_gpu)
@@ -219,18 +223,18 @@ class AdaptText:
                                                  True)
         classifierModelBWD = classifierTrainerBwd.train(grad_unfreeze)
 
-        eval = Evaluator()
-        classifierBWDAccuracy = eval.get_accuracy(classifierModelBWD)
-        classifierBWDAccuracyNew = 0
-
-        if (classifierBWDAccuracy.item() < 53.0):
-            classifierTrainerBwd = ClassifierTrainer(data_class, self.lm_fns, self.mdl_path, custom_model_store_path,
-                                                     False)
-            classifierModelBWDNew = classifierTrainerBwd.train(grad_unfreeze)
-            classifierBWDAccuracyNew = eval.get_accuracy(classifierModelBWDNew)
-
-        if (classifierBWDAccuracyNew.item() > classifierBWDAccuracy.item()):
-            classifierModelBWD = classifierModelBWDNew
+        # eval = Evaluator()
+        # classifierBWDAccuracy = eval.get_accuracy(classifierModelBWD)
+        # classifierBWDAccuracyNew = 0
+        #
+        # if (classifierBWDAccuracy.item() < 53.0):
+        #     classifierTrainerBwd = ClassifierTrainer(data_class, self.lm_fns, self.mdl_path, custom_model_store_path,
+        #                                              False)
+        #     classifierModelBWDNew = classifierTrainerBwd.train(grad_unfreeze)
+        #     classifierBWDAccuracyNew = eval.get_accuracy(classifierModelBWDNew)
+        #
+        # if (classifierBWDAccuracyNew.item() > classifierBWDAccuracy.item()):
+        #     classifierModelBWD = classifierModelBWDNew
 
         return classifierModelFWD, classifierModelBWD, classes
 

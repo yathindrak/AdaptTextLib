@@ -82,6 +82,8 @@ class ClassifierTrainer(Trainer):
         evaluator = Evaluator()
         classifier_initial_accuracy = evaluator.get_accuracy(classifier_initial).item()
 
+        print('Gradual Unfreezing..')
+
         if grad_unfreeze:
             learn.freeze_to(-2)
             learn.fit_one_cycle(8, lr,
@@ -96,11 +98,14 @@ class ClassifierTrainer(Trainer):
             classifier_grad_unfrozen_accuracy = evaluator.get_accuracy(learn).item()
 
             if classifier_grad_unfrozen_accuracy < classifier_initial_accuracy:
+                print('reverting back to initial model (1)...')
                 learn = classifier_initial
             else:
+                print('continue grad unfrozen model...')
                 classifier_initial = learn
                 classifier_initial_accuracy = classifier_grad_unfrozen_accuracy
 
+        print('Completely Unfreezing..')
 
         learn.unfreeze()
         tuner = HyperParameterTuner(learn)
@@ -116,6 +121,7 @@ class ClassifierTrainer(Trainer):
         classifier_unfrozen_accuracy = evaluator.get_accuracy(learn).item()
 
         if classifier_unfrozen_accuracy < classifier_initial_accuracy:
+            print('reverting back to initial model (2)...')
             learn = classifier_initial
         #
         if self.is_backward:
