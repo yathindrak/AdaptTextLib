@@ -5,7 +5,7 @@ from ...fastai1.callbacks import SaveModelCallback, ReduceLROnPlateauCallback, O
 from ..hyperparameter.tuner import HyperParameterTuner
 from .trainer import Trainer
 from ..optimizer.DiffGradOptimizer import DiffGrad
-
+import copy
 
 class ClassifierTrainer(Trainer):
     def __init__(self, data, lm_fns, mdl_path, model_store_path, is_backward=False, drop_mult=0.5, lang='si'):
@@ -47,7 +47,6 @@ class ClassifierTrainer(Trainer):
         return learn
 
     def train(self, grad_unfreeze=True):
-        global classifier_sec_initial_accuracy, classifier_sec_initial
         dropout_probs = dict(input=0.25, output=0.1, hidden=0.15, embedding=0.02, weight=0.2)
         size_of_embedding = 400
         num_of_hidden_neurons = 1550
@@ -78,7 +77,7 @@ class ClassifierTrainer(Trainer):
                                                ReduceLROnPlateauCallback(learn, factor=0.8)])
 
         # store model temporarily
-        classifier_initial = learn
+        classifier_initial = copy.deepcopy(learn)
 
         evaluator = Evaluator()
         classifier_initial_accuracy = evaluator.get_accuracy(classifier_initial).item()
@@ -96,18 +95,6 @@ class ClassifierTrainer(Trainer):
                                 callbacks=[SaveModelCallback(learn), OverSamplingCallback(learn),
                                            ReduceLROnPlateauCallback(learn, factor=0.8)])
 
-            classifier_grad_unfrozen_accuracy = evaluator.get_accuracy(learn).item()
-
-            if classifier_grad_unfrozen_accuracy < classifier_initial_accuracy:
-                print('reverting back to initial model (1)...')
-                learn = classifier_initial
-                classifier_sec_initial = classifier_initial
-                classifier_sec_initial_accuracy = classifier_initial_accuracy
-            else:
-                print('continue grad unfrozen model...')
-                classifier_sec_initial = learn
-                classifier_sec_initial_accuracy = classifier_grad_unfrozen_accuracy
-
         print('Completely Unfreezing..')
 
         learn.unfreeze()
@@ -123,15 +110,11 @@ class ClassifierTrainer(Trainer):
 
         classifier_unfrozen_accuracy = evaluator.get_accuracy(learn).item()
 
-        if classifier_unfrozen_accuracy < classifier_sec_initial_accuracy:
-            print('reverting back to initial model (2)...')
-            learn = classifier_sec_initial
-            classifier_unfrozen_accuracy = classifier_sec_initial_accuracy
-
         if classifier_unfrozen_accuracy < classifier_initial_accuracy:
-            print('reverting back to initial model (1)...')
+            print('reverting back to initial model...')
             learn = classifier_initial
-        #
+            print('The new accuracy is {0} %.'.format(classifier_initial_accuracy))
+
         if self.is_backward:
             learn.save(f'{self.lang}_clas_bwd')
         else:
