@@ -1,6 +1,8 @@
 import zipfile
 import requests
 from sklearn.model_selection import train_test_split
+
+from .evaluator.evaluator import Evaluator
 from .utils.dropbox_handler import DropboxHandler
 from .utils.zip_handler import ZipHandler
 from ..fastai1.basics import *
@@ -140,6 +142,7 @@ class AdaptText:
         lmTrainer_bwd.train()
 
     def build_classifier(self, df, text_name, label_name, grad_unfreeze: bool = True, preprocessor=None):
+        global classifierModelFWDNew, classifierModelBWDNew
         df = df[[text_name, label_name]]
         func_names = [f'{func_name}.{extension}' for func_name, extension in zip(self.lm_fns, ['pth', 'pkl'])]
 
@@ -194,6 +197,19 @@ class AdaptText:
         classifierTrainerFwd = ClassifierTrainer(data_class, self.lm_fns, self.mdl_path, custom_model_store_path, False)
         classifierModelFWD = classifierTrainerFwd.train(grad_unfreeze)
 
+        eval = Evaluator()
+        classifierFWDAccuracy = eval.get_accuracy(classifierModelFWD)
+        classifierFWDAccuracyNew = 0
+
+        if(classifierFWDAccuracy.item() < 55):
+            classifierTrainerFwd = ClassifierTrainer(data_class, self.lm_fns, self.mdl_path, custom_model_store_path,
+                                                     False)
+            classifierModelFWDNew = classifierTrainerFwd.train(grad_unfreeze)
+            classifierFWDAccuracyNew = eval.get_accuracy(classifierModelFWD)
+
+        if (classifierFWDAccuracyNew.item() > classifierFWDAccuracy.item()):
+            classifierModelFWD = classifierModelFWDNew
+
         lmTrainerBwd = LMTrainer(data_lm_bwd, self.lm_fns_bwd, self.mdl_path, custom_model_store_path_bwd, True,
                                  is_gpu=self.is_gpu)
         languageModelBWD = lmTrainerBwd.train()
@@ -202,6 +218,19 @@ class AdaptText:
                                                  custom_model_store_path_bwd,
                                                  True)
         classifierModelBWD = classifierTrainerBwd.train(grad_unfreeze)
+
+        eval = Evaluator()
+        classifierBWDAccuracy = eval.get_accuracy(classifierModelBWD)
+        classifierBWDAccuracyNew = 0
+
+        if (classifierBWDAccuracy.item() < 55):
+            classifierTrainerBwd = ClassifierTrainer(data_class, self.lm_fns, self.mdl_path, custom_model_store_path,
+                                                     False)
+            classifierModelBWDNew = classifierTrainerBwd.train(grad_unfreeze)
+            classifierBWDAccuracyNew = eval.get_accuracy(classifierModelBWDNew)
+
+        if (classifierBWDAccuracyNew.item() > classifierBWDAccuracy.item()):
+            classifierModelBWD = classifierModelBWDNew
 
         return classifierModelFWD, classifierModelBWD, classes
 

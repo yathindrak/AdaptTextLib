@@ -107,3 +107,11 @@ class Evaluator():
     #     "ඉඩකඩ සම්බන්ධයෙන් මතු වූ ගැටලුව මහර බන්ධනාගාරයේ කලහකාරී තත්ත්වයට එකහෙළා බලපෑ බව, සිද්ධිය පිළිබඳව විමර්ශනය කිරීම සඳහා අධිකරණ අමාත්‍යවරයා පත්කළ කමිටුවේ අතුරු වාර්තාව පෙන්වා දී තිබේ."))
 
     torch.argmax(preds[0])
+
+  def get_accuracy(self, learn):
+    preds, y, losses = learn.get_preds(with_loss=True)
+
+    acc = accuracy(preds, y)
+    print('The accuracy is {0} %.'.format(acc))
+
+    return acc
