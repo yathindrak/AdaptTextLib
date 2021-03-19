@@ -1,4 +1,3 @@
-from ...fastai1.callbacks.undersampling import UnderSamplingCallback
 from ...fastai1.text import *
 from ...fastai1.basics import *
 from ...fastai1.callbacks import SaveModelCallback, ReduceLROnPlateauCallback, OverSamplingCallback
