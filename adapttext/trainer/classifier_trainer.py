@@ -47,6 +47,7 @@ class ClassifierTrainer(Trainer):
         return learn
 
     def train(self, grad_unfreeze=True):
+        global classifier_sec_initial_accuracy, classifier_sec_initial
         dropout_probs = dict(input=0.25, output=0.1, hidden=0.15, embedding=0.02, weight=0.2)
         size_of_embedding = 400
         num_of_hidden_neurons = 1550
@@ -100,10 +101,12 @@ class ClassifierTrainer(Trainer):
             if classifier_grad_unfrozen_accuracy < classifier_initial_accuracy:
                 print('reverting back to initial model (1)...')
                 learn = classifier_initial
+                classifier_sec_initial = classifier_initial
+                classifier_sec_initial_accuracy = classifier_initial_accuracy
             else:
                 print('continue grad unfrozen model...')
-                classifier_initial = learn
-                classifier_initial_accuracy = classifier_grad_unfrozen_accuracy
+                classifier_sec_initial = learn
+                classifier_sec_initial_accuracy = classifier_grad_unfrozen_accuracy
 
         print('Completely Unfreezing..')
 
@@ -120,8 +123,13 @@ class ClassifierTrainer(Trainer):
 
         classifier_unfrozen_accuracy = evaluator.get_accuracy(learn).item()
 
-        if classifier_unfrozen_accuracy < classifier_initial_accuracy:
+        if classifier_unfrozen_accuracy < classifier_sec_initial_accuracy:
             print('reverting back to initial model (2)...')
+            learn = classifier_sec_initial
+            classifier_unfrozen_accuracy = classifier_sec_initial_accuracy
+
+        if classifier_unfrozen_accuracy < classifier_initial_accuracy:
+            print('reverting back to initial model (1)...')
             learn = classifier_initial
         #
         if self.is_backward:
