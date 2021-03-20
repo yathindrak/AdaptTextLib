@@ -17,7 +17,7 @@ from .utils.wiki_handler import WikiHandler
 
 
 class AdaptText:
-    def __init__(self, lang, data_root, bs=128, splitting_ratio=0.1):
+    def __init__(self, lang, data_root, bs=128, splitting_ratio=0.1, is_imbalanced=False):
         self.lang = lang
         self.data_root = data_root
         self.bs = bs
@@ -36,6 +36,7 @@ class AdaptText:
                               f'{data_root}/data/{lang}wiki/models/si_wt_bwd.pth']
         self.lm_store_files = ['si_wt_vocab.pkl', 'si_wt.pth', 'si_wt_vocab_bwd.pkl', 'si_wt_bwd.pth']
         self.classifiers_store_path = ["models/fwd-export.pkl", "models/bwd-export.pkl"]
+        self.is_imbalanced = is_imbalanced
 
         if not torch.cuda.is_available():
             self.is_gpu = False
@@ -142,7 +143,6 @@ class AdaptText:
         lmTrainer_bwd.train()
 
     def build_classifier(self, df, text_name, label_name, grad_unfreeze: bool = True, preprocessor=None):
-        global classifierModelFWDNew, classifierModelBWDNew
         df = df[[text_name, label_name]]
         func_names = [f'{func_name}.{extension}' for func_name, extension in zip(self.lm_fns, ['pth', 'pkl'])]
 
@@ -196,7 +196,7 @@ class AdaptText:
                                  is_gpu=self.is_gpu)
         languageModelFWD = lmTrainerFwd.train()
 
-        classifierTrainerFwd = ClassifierTrainer(data_class, self.lm_fns, self.mdl_path, custom_model_store_path, False)
+        classifierTrainerFwd = ClassifierTrainer(data_class, self.lm_fns, self.mdl_path, custom_model_store_path, False, is_imbalanced=self.is_imbalanced)
         classifierModelFWD = classifierTrainerFwd.train(grad_unfreeze)
 
         # eval = Evaluator()
@@ -219,8 +219,7 @@ class AdaptText:
         languageModelBWD = lmTrainerBwd.train()
 
         classifierTrainerBwd = ClassifierTrainer(data_class_bwd, self.lm_fns_bwd, self.mdl_path,
-                                                 custom_model_store_path_bwd,
-                                                 True)
+                                                 custom_model_store_path_bwd, True, is_imbalanced=self.is_imbalanced)
         classifierModelBWD = classifierTrainerBwd.train(grad_unfreeze)
 
         # eval = Evaluator()

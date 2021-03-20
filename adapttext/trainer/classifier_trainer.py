@@ -8,13 +8,14 @@ from ..optimizer.DiffGradOptimizer import DiffGrad
 import copy
 
 class ClassifierTrainer(Trainer):
-    def __init__(self, data, lm_fns, mdl_path, model_store_path, is_backward=False, drop_mult=0.5, lang='si'):
+    def __init__(self, data, lm_fns, mdl_path, model_store_path, is_backward=False, drop_mult=0.5, is_imbalanced=False, lang='si'):
         self.data = data
         self.lm_fns = lm_fns
         self.mdl_path = mdl_path
         self.model_store_path = model_store_path
         self.is_backward = is_backward
         self.drop_mult = drop_mult
+        self.is_imbalanced = is_imbalanced
         self.lang = lang
 
     def retrieve_classifier(self, databunch: DataBunch, config: dict, drop_multi_val: float = 1.,
@@ -73,8 +74,12 @@ class ClassifierTrainer(Trainer):
         tuner = HyperParameterTuner(learn)
         lr = tuner.find_optimized_lr()
 
-        learn.fit_one_cycle(12, lr, callbacks=[SaveModelCallback(learn), OverSamplingCallback(learn),
+        if self.is_imbalanced:
+            learn.fit_one_cycle(12, lr, callbacks=[SaveModelCallback(learn), OverSamplingCallback(learn),
                                                ReduceLROnPlateauCallback(learn, factor=0.8)])
+        else:
+            learn.fit_one_cycle(12, lr, callbacks=[SaveModelCallback(learn),
+                                                  ReduceLROnPlateauCallback(learn, factor=0.8)])
 
         # store model temporarily
         classifier_initial = copy.deepcopy(learn)
@@ -85,28 +90,50 @@ class ClassifierTrainer(Trainer):
         print('Gradual Unfreezing..')
 
         if grad_unfreeze:
-            learn.freeze_to(-2)
-            learn.fit_one_cycle(8, lr,
-                                callbacks=[SaveModelCallback(learn), OverSamplingCallback(learn),
-                                           ReduceLROnPlateauCallback(learn, factor=0.8)])
+            if self.is_imbalanced:
+                learn.freeze_to(-2)
+                learn.fit_one_cycle(8, lr,
+                                    callbacks=[SaveModelCallback(learn), OverSamplingCallback(learn),
+                                               ReduceLROnPlateauCallback(learn, factor=0.8)])
 
-            learn.freeze_to(-3)
-            learn.fit_one_cycle(6, lr,
-                                callbacks=[SaveModelCallback(learn), OverSamplingCallback(learn),
-                                           ReduceLROnPlateauCallback(learn, factor=0.8)])
+                learn.freeze_to(-3)
+                learn.fit_one_cycle(6, lr,
+                                    callbacks=[SaveModelCallback(learn), OverSamplingCallback(learn),
+                                               ReduceLROnPlateauCallback(learn, factor=0.8)])
+            else:
+                learn.freeze_to(-2)
+                learn.fit_one_cycle(8, lr,
+                                    callbacks=[SaveModelCallback(learn),
+                                               ReduceLROnPlateauCallback(learn, factor=0.8)])
+
+                learn.freeze_to(-3)
+                learn.fit_one_cycle(6, lr,
+                                    callbacks=[SaveModelCallback(learn),
+                                               ReduceLROnPlateauCallback(learn, factor=0.8)])
 
         print('Completely Unfreezing..')
 
         learn.unfreeze()
+
         tuner = HyperParameterTuner(learn)
         lr = tuner.find_optimized_lr()
-        learn.fit_one_cycle(6, lr, callbacks=[SaveModelCallback(learn), OverSamplingCallback(learn),
-                                              ReduceLROnPlateauCallback(learn, factor=0.8)])
-        learn.fit_one_cycle(6, lr / 2, callbacks=[SaveModelCallback(learn), OverSamplingCallback(learn),
+
+        if self.is_imbalanced:
+            learn.fit_one_cycle(6, lr, callbacks=[SaveModelCallback(learn), OverSamplingCallback(learn),
                                                   ReduceLROnPlateauCallback(learn, factor=0.8)])
-        learn.fit_one_cycle(8, lr,
-                            callbacks=[SaveModelCallback(learn, every='improvement', monitor='accuracy'), OverSamplingCallback(learn),
-                                       ReduceLROnPlateauCallback(learn, factor=0.8)])
+            learn.fit_one_cycle(6, lr / 2, callbacks=[SaveModelCallback(learn), OverSamplingCallback(learn),
+                                                      ReduceLROnPlateauCallback(learn, factor=0.8)])
+            learn.fit_one_cycle(8, lr,
+                                callbacks=[SaveModelCallback(learn, every='improvement', monitor='accuracy'), OverSamplingCallback(learn),
+                                           ReduceLROnPlateauCallback(learn, factor=0.8)])
+        else:
+            learn.fit_one_cycle(6, lr, callbacks=[SaveModelCallback(learn),
+                                                  ReduceLROnPlateauCallback(learn, factor=0.8)])
+            learn.fit_one_cycle(6, lr / 2, callbacks=[SaveModelCallback(learn),
+                                                      ReduceLROnPlateauCallback(learn, factor=0.8)])
+            learn.fit_one_cycle(8, lr,
+                                callbacks=[SaveModelCallback(learn, every='improvement', monitor='accuracy'),
+                                           ReduceLROnPlateauCallback(learn, factor=0.8)])
 
         classifier_unfrozen_accuracy = evaluator.get_accuracy(learn).item()
 
@@ -115,9 +142,13 @@ class ClassifierTrainer(Trainer):
             learn = classifier_initial
             print('The new accuracy is {0} %.'.format(classifier_initial_accuracy))
 
-        if self.is_backward:
-            learn.save(f'{self.lang}_clas_bwd')
-        else:
-            learn.save(f'{self.lang}_clas')
+        # testing
+        # classifier_initial.export("pkl_name_class.pkl")
+        # if self.is_backward:
+        #     # learn.save(f'{self.lang}_clas_bwd')
+        #     learn.export("pkl_name_class_bwd.pkl")
+        # else:
+        #     # learn.save(f'{self.lang}_clas')
+        #     learn.export("pkl_name_class.pkl")
 
         return learn

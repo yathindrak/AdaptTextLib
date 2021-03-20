@@ -100,8 +100,8 @@ class Evaluator():
     plt.title('Receiver operating characteristic')
     plt.legend(loc="lower right")
 
-    interp2 = TextClassificationInterpretation.from_learner(learn)
-    interp2.show_top_losses(10)
+    # interp2 = TextClassificationInterpretation.from_learner(learn)
+    # interp2.show_top_losses(10)
 
     # print(interp2.show_intrinsic_attention(
     #     "ඉඩකඩ සම්බන්ධයෙන් මතු වූ ගැටලුව මහර බන්ධනාගාරයේ කලහකාරී තත්ත්වයට එකහෙළා බලපෑ බව, සිද්ධිය පිළිබඳව විමර්ශනය කිරීම සඳහා අධිකරණ අමාත්‍යවරයා පත්කළ කමිටුවේ අතුරු වාර්තාව පෙන්වා දී තිබේ."))
