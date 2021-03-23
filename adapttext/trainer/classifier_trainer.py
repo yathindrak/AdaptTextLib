@@ -116,10 +116,7 @@ class ClassifierTrainer(Trainer):
         learn.unfreeze()
 
         tuner = HyperParameterTuner(learn)
-        try:
-            lr_unfrozed = tuner.find_optimized_lr()
-        except:
-            print("Error thrown when getting lr after unfreezing...")
+        lr_unfrozed = tuner.find_optimized_lr()
 
         if lr_unfrozed:
             lr = lr_unfrozed
