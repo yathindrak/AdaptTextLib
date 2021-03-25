@@ -14,13 +14,14 @@ class BaseLMDataBunchLoader(BaseDataBunchLoader):
 
     def load(self):
         tokenizer = Tokenizer(SpacyTokenizer, lang="xx")
-        data = (TextList.from_folder(Path(self.path), processor=[OpenFileProcessor(), TokenizeProcessor(tokenizer=tokenizer), NumericalizeProcessor(max_vocab=30000)])
+        data = (TextList.from_folder(Path(self.path), processor=[OpenFileProcessor(), TokenizeProcessor(tokenizer=tokenizer), NumericalizeProcessor(max_vocab=60000)])
                 .split_by_rand_pct(self.splitting_ratio, seed=self.seed)
                 .label_for_lm()
                 .databunch(bs=self.bs, num_workers=1, backwards=self.is_backward))
         # Store data
         data.save(f'{self.lang}_databunch')
         print(len(data.vocab.itos), len(data.train_ds))
+        print("Base LM vocab size : " + str(len(data.vocab.itos)))
         # Load data
         # data = load_data(self.path, f'{self.lang}_databunch', bs=self.bs)
         return data

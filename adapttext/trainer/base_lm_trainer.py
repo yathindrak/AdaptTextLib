@@ -54,7 +54,7 @@ class BaseLMTrainer(Trainer):
         config = dict(emb_sz=size_of_embedding, n_hid=num_of_hidden_neurons, n_layers=num_of_layers,
                       input_p=dropout_probs['input'], output_p=dropout_probs['output'],
                       hidden_p=dropout_probs['hidden'], embed_p=dropout_probs['embedding'],
-                      weight_p=dropout_probs['weight'], pad_token=1, qrnn=True, out_bias=True)
+                      weight_p=dropout_probs['weight'], pad_token=1, qrnn=False, out_bias=True)
 
         if self.is_gpu:
             learn = self.retrieve_language_model(self.data, config=config, drop_multi_val=self.drop_mult,
