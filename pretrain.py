@@ -1,4 +1,4 @@
-from ..adapttext.adapt_text import AdaptText
+from .adapttext.adapt_text import AdaptText
 
 if __name__ == '__main__':
 	lang = 'si'
