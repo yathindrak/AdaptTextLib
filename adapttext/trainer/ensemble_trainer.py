@@ -37,7 +37,7 @@ class EnsembleTrainer(Trainer):
                          .label_from_df(cols="target")
                          .databunch())
 
-        learn = tabular_learner(data_ensemble, layers=[200, 100], metrics=metrics)
+        learn = tabular_learner(data_ensemble, layers=[1000,500], ps=[0.001, 0.01], metrics=metrics, emb_drop = 0.04)
 
         return learn
 
@@ -52,6 +52,9 @@ class EnsembleTrainer(Trainer):
         lr = tuner.find_optimized_lr()
 
         learn.fit_one_cycle(8, lr, callbacks=[SaveModelCallback(learn),
+                                              ReduceLROnPlateauCallback(learn, factor=0.8)])
+
+        learn.fit_one_cycle(8, lr/2, callbacks=[SaveModelCallback(learn),
                                               ReduceLROnPlateauCallback(learn, factor=0.8)])
 
         return learn
