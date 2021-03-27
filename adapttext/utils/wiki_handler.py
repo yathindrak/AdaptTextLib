@@ -20,7 +20,7 @@ class WikiHandler:
             print("downloading articles...")
             # wiki_source_uri = f'https://dumps.wikimedia.org/{self.lang_code}/latest/{zip_path}'
 
-            wiki_source_uri = 'https://dumps.wikimedia.org/siwiki/20210301/siwiki-20210301-pages-articles-multistream.xml.bz2'
+            wiki_source_uri = 'https://dumps.wikimedia.org/siwiki/20210220/siwiki-20210220-pages-articles-multistream.xml.bz2'
             download_url(wiki_source_uri, path / zip_path)
             print("unzipping articles archive...")
             bunzip(path / zip_path)

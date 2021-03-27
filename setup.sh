@@ -10,6 +10,9 @@
 mkdir /storage
 mkdir /downloads
 
+chmod 777 -R /storage
+chmod 777 -R /downloads
+
 #yarn build
 
 # setup instance
@@ -28,7 +31,7 @@ apt update
 #sudo apt update
 
 # setup libs for the app
-cd api
+#cd api
 
 #python3 -m venv venv
 #source venv/bin/activate
@@ -39,7 +42,7 @@ cd api
 
 pip3 install -r requirements.txt
 
-cp ./adapttext.service /etc/systemd/system/adapttext.service
+#cp ./adapttext.service /etc/systemd/system/adapttext.service
 
 mkdir ./adapttext/optimizer
 git clone https://gitlab.com/yathindra/fastai1.git

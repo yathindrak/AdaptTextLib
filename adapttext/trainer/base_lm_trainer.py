@@ -73,7 +73,7 @@ class BaseLMTrainer(Trainer):
         gc.collect()
 
         learn.unfreeze()
-        learn.fit_one_cycle(12, lr, moms=(0.8, 0.7),
+        learn.fit_one_cycle(10, lr, moms=(0.8, 0.7),
                             callbacks=[SaveModelCallback(learn), ReduceLROnPlateauCallback(learn, factor=0.8)])
 
         learn.to_fp32().save(self.mdl_path / self.lm_fns[0], with_opt=False)
