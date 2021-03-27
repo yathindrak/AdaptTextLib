@@ -43,7 +43,7 @@ class Evaluator():
     interpretation = ClassificationInterpretation(learn, preds, y, losses)
     interpretation.plot_confusion_matrix()
 
-    pred_val = learn.get_preds(DatasetType.Valid, ordered=True)
+    pred_val = learn.get_preds(DatasetType.Valid)
     pred_val_l = pred_val[0].argmax(1)
 
     print(classification_report(pred_val[1], pred_val_l))
