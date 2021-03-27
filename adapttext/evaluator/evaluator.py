@@ -1,4 +1,3 @@
-from ...fastai1.text import TextClassificationInterpretation
 from ...fastai1.basics import *
 from sklearn.metrics import classification_report, matthews_corrcoef
 from sklearn.metrics import roc_curve, auc
@@ -7,17 +6,9 @@ class Evaluator():
   def __init__(self):
     pass
 
-  def evaluate_ensemble(self, learn_clas_fwd, learn_clas_bwd):
+  def evaluate_ensemble(self, learn):
 
-    preds_fw, y_fw, losses_fw = learn_clas_fwd.get_preds(with_loss=True)
-    preds_bw, y_bw, losses_bw = learn_clas_bwd.get_preds(with_loss=True)
-
-    # if abs(accuracy(preds_fw, y_fw) - accuracy(preds_bw, y_bw) > 10):
-    #   print("Higher difference between accuracies of fw and bwd models...")
-
-    preds = (preds_fw + preds_bw) / 2
-    y = (y_fw + y_bw) / 2
-    losses = (losses_fw + losses_bw) / 2
+    preds, y, losses = learn.get_preds(with_loss=True)
 
     acc = accuracy(preds, y)
     print('The accuracy is {0} %.'.format(acc))
@@ -49,10 +40,10 @@ class Evaluator():
     plt.legend(loc="lower right")
 
     # use learn_clas_fwd for the ensemble to get close confusion matrix for the actual
-    interpretation = ClassificationInterpretation(learn_clas_fwd, preds, y, losses)
+    interpretation = ClassificationInterpretation(learn, preds, y, losses)
     interpretation.plot_confusion_matrix()
 
-    pred_val = learn_clas_fwd.get_preds(DatasetType.Valid, ordered=True)
+    pred_val = learn.get_preds(DatasetType.Valid, ordered=True)
     pred_val_l = pred_val[0].argmax(1)
 
     print(classification_report(pred_val[1], pred_val_l))

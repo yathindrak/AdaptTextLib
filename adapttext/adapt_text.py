@@ -2,7 +2,7 @@ import zipfile
 import requests
 from sklearn.model_selection import train_test_split
 
-from .evaluator.evaluator import Evaluator
+from .trainer.ensemble_trainer import EnsembleTrainer
 from .utils.dropbox_handler import DropboxHandler
 from .utils.zip_handler import ZipHandler
 from ..fastai1.basics import *
@@ -235,7 +235,10 @@ class AdaptText:
         # if (classifierBWDAccuracyNew.item() > classifierBWDAccuracy.item()):
         #     classifierModelBWD = classifierModelBWDNew
 
-        return classifierModelFWD, classifierModelBWD, classes
+        ensembleTrainer = EnsembleTrainer(classifierModelFWD, classifierModelBWD, self.classifiers_store_path, task_id)
+        ensembleModel = ensembleTrainer.train()
+
+        return classifierModelFWD, classifierModelBWD, ensembleModel, classes
 
     def store_lm(self, zip_file_name):
         # zip_file_name = "test.zip"
