@@ -7,11 +7,9 @@ from ...fastai1.tabular import *
 
 
 class EnsembleTrainer(Trainer):
-    def __init__(self, learn_clas_fwd, learn_clas_bwd, classifiers_store_path, task_id, drop_mult=0.5, lang='si'):
+    def __init__(self, learn_clas_fwd, learn_clas_bwd, drop_mult=0.5, lang='si'):
         self.learn_clas_fwd = learn_clas_fwd
         self.learn_clas_bwd = learn_clas_bwd
-        self.classifiers_store_path = classifiers_store_path
-        self.task_id = task_id
         self.drop_mult = drop_mult
         self.lang = lang
 
@@ -55,8 +53,5 @@ class EnsembleTrainer(Trainer):
 
         learn.fit_one_cycle(8, lr, callbacks=[SaveModelCallback(learn),
                                               ReduceLROnPlateauCallback(learn, factor=0.8)])
-
-        pkl_name = self.classifiers_store_path[2] + self.task_id + ".pkl"
-        learn.export(pkl_name)
 
         return learn
