@@ -162,7 +162,7 @@ class AdaptText:
         print(item_counts)
         df[label_name].value_counts().plot.bar(rot=30)
 
-        df_trn, df_val = train_test_split(df, stratify=df[label_name], test_size=0.2)
+        df_trn, df_val = train_test_split(df, stratify=df[label_name], test_size=0.1)
 
         # forward training
         lmDataBunchLoader = LMDataBunchLoader(df_trn, df_val, text_name, label_name, self.splitting_ratio,
