@@ -7,9 +7,10 @@ from ...fastai1.tabular import *
 
 
 class EnsembleTrainer(Trainer):
-    def __init__(self, learn_clas_fwd, learn_clas_bwd, drop_mult=0.5, lang='si'):
+    def __init__(self, learn_clas_fwd, learn_clas_bwd, drop_mult=0.5, is_imbalanced=False, lang='si'):
         self.learn_clas_fwd = learn_clas_fwd
         self.learn_clas_bwd = learn_clas_bwd
+        self.is_imbalanced = is_imbalanced
         self.drop_mult = drop_mult
         self.lang = lang
 
@@ -51,10 +52,17 @@ class EnsembleTrainer(Trainer):
         tuner = HyperParameterTuner(learn)
         lr = tuner.find_optimized_lr()
 
-        learn.fit_one_cycle(8, lr, callbacks=[SaveModelCallback(learn),
-                                              ReduceLROnPlateauCallback(learn, factor=0.8)])
+        if self.is_imbalanced:
+            learn.fit_one_cycle(8, lr, callbacks=[SaveModelCallback(learn),OverSamplingCallback(learn),
+                                                  ReduceLROnPlateauCallback(learn, factor=0.8)])
 
-        learn.fit_one_cycle(8, lr/2, callbacks=[SaveModelCallback(learn),
-                                              ReduceLROnPlateauCallback(learn, factor=0.8)])
+            learn.fit_one_cycle(8, lr/2, callbacks=[SaveModelCallback(learn),OverSamplingCallback(learn),
+                                                  ReduceLROnPlateauCallback(learn, factor=0.8)])
+        else:
+            learn.fit_one_cycle(8, lr, callbacks=[SaveModelCallback(learn),
+                                                  ReduceLROnPlateauCallback(learn, factor=0.8)])
+
+            learn.fit_one_cycle(8, lr / 2, callbacks=[SaveModelCallback(learn),
+                                                      ReduceLROnPlateauCallback(learn, factor=0.8)])
 
         return learn
