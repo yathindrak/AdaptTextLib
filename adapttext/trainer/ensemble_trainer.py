@@ -58,11 +58,19 @@ class EnsembleTrainer(Trainer):
 
             learn.fit_one_cycle(8, lr/2, callbacks=[SaveModelCallback(learn),OverSamplingCallback(learn),
                                                   ReduceLROnPlateauCallback(learn, factor=0.8)])
+
+            learn.fit_one_cycle(8, lr/2,
+                                callbacks=[SaveModelCallback(learn, every='improvement', monitor='accuracy'),
+                                           ReduceLROnPlateauCallback(learn, factor=0.8)])
         else:
             learn.fit_one_cycle(8, lr, callbacks=[SaveModelCallback(learn),
                                                   ReduceLROnPlateauCallback(learn, factor=0.8)])
 
             learn.fit_one_cycle(8, lr / 2, callbacks=[SaveModelCallback(learn),
                                                       ReduceLROnPlateauCallback(learn, factor=0.8)])
+
+            learn.fit_one_cycle(8, lr/2,
+                                callbacks=[SaveModelCallback(learn, every='improvement', monitor='accuracy'),
+                                           ReduceLROnPlateauCallback(learn, factor=0.8)])
 
         return learn

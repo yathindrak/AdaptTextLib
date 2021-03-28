@@ -126,17 +126,17 @@ class ClassifierTrainer(Trainer):
                                                   ReduceLROnPlateauCallback(learn, factor=0.8)])
             learn.fit_one_cycle(6, lr / 2, callbacks=[SaveModelCallback(learn), OverSamplingCallback(learn),
                                                       ReduceLROnPlateauCallback(learn, factor=0.8)])
-            learn.fit_one_cycle(8, lr,
-                                callbacks=[SaveModelCallback(learn, every='improvement', monitor='accuracy'), OverSamplingCallback(learn),
-                                           ReduceLROnPlateauCallback(learn, factor=0.8)])
+            # learn.fit_one_cycle(8, lr,
+            #                     callbacks=[SaveModelCallback(learn, every='improvement', monitor='accuracy'), OverSamplingCallback(learn),
+            #                                ReduceLROnPlateauCallback(learn, factor=0.8)])
         else:
             learn.fit_one_cycle(6, lr, callbacks=[SaveModelCallback(learn),
                                                   ReduceLROnPlateauCallback(learn, factor=0.8)])
             learn.fit_one_cycle(6, lr / 2, callbacks=[SaveModelCallback(learn),
                                                       ReduceLROnPlateauCallback(learn, factor=0.8)])
-            learn.fit_one_cycle(8, lr,
-                                callbacks=[SaveModelCallback(learn, every='improvement', monitor='accuracy'),
-                                           ReduceLROnPlateauCallback(learn, factor=0.8)])
+            # learn.fit_one_cycle(8, lr,
+            #                     callbacks=[SaveModelCallback(learn, every='improvement', monitor='accuracy'),
+            #                                ReduceLROnPlateauCallback(learn, factor=0.8)])
 
         classifier_unfrozen_accuracy = evaluator.get_accuracy(learn).item()
 
