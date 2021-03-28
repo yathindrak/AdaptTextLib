@@ -7,9 +7,10 @@ from ...fastai1.tabular import *
 
 
 class EnsembleTrainer(Trainer):
-    def __init__(self, learn_clas_fwd, learn_clas_bwd, drop_mult=0.5, is_imbalanced=False, lang='si'):
+    def __init__(self, learn_clas_fwd, learn_clas_bwd, classes, drop_mult=0.5, is_imbalanced=False, lang='si'):
         self.learn_clas_fwd = learn_clas_fwd
         self.learn_clas_bwd = learn_clas_bwd
+        self.classes = classes
         self.is_imbalanced = is_imbalanced
         self.drop_mult = drop_mult
         self.lang = lang
@@ -26,6 +27,8 @@ class EnsembleTrainer(Trainer):
                        .join(preds_textm_bwd)
                        .join(preds_target_fwd).rename(columns={0: "target"})
                        )
+
+        ensemble_df["target"].replace(list(range(0, len(self.classes))), self.classes, inplace=True)
 
         column_names = ensemble_df.columns.values.tolist()
         column_names.pop()

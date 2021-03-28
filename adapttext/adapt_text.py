@@ -235,7 +235,7 @@ class AdaptText:
         # if (classifierBWDAccuracyNew.item() > classifierBWDAccuracy.item()):
         #     classifierModelBWD = classifierModelBWDNew
 
-        ensembleTrainer = EnsembleTrainer(classifierModelFWD, classifierModelBWD, is_imbalanced=self.is_imbalanced)
+        ensembleTrainer = EnsembleTrainer(classifierModelFWD, classifierModelBWD, classes, is_imbalanced=self.is_imbalanced)
         ensembleModel = ensembleTrainer.train()
 
         return classifierModelFWD, classifierModelBWD, ensembleModel, classes
