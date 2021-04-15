@@ -7,17 +7,16 @@ from ...fastai1.tabular import *
 
 
 class EnsembleTrainer(Trainer):
-    def __init__(self, learn_clas_fwd, learn_clas_bwd, classes, drop_mult=0.5, is_imbalanced=False, lang='si'):
-        self.learn_clas_fwd = learn_clas_fwd
-        self.learn_clas_bwd = learn_clas_bwd
-        self.classes = classes
-        self.is_imbalanced = is_imbalanced
-        self.drop_mult = drop_mult
-        self.lang = lang
+    def __init__(self, learn_clas_fwd, learn_clas_bwd, classes, *args, **kwargs):
+        super(EnsembleTrainer, self).__init__(*args, **kwargs)
+        self.__learn_clas_fwd = learn_clas_fwd
+        self.__learn_clas_bwd = learn_clas_bwd
+        self.__classes = classes
 
-    def retrieve_classifier(self, metrics=None):
-        pred_tensors_fwd, pred_tensors_target_fwd = self.learn_clas_fwd.get_preds(DatasetType.Valid, ordered=True)
-        pred_tensors_bwd, pred_tensors_target_bwd = self.learn_clas_bwd.get_preds(DatasetType.Valid, ordered=True)
+    def retrieve_classifier(self):
+        metrics = [error_rate, accuracy]
+        pred_tensors_fwd, pred_tensors_target_fwd = self.__learn_clas_fwd.get_preds(DatasetType.Valid, ordered=True)
+        pred_tensors_bwd, pred_tensors_target_bwd = self.__learn_clas_bwd.get_preds(DatasetType.Valid, ordered=True)
 
         preds_fwd = pd.DataFrame(pred_tensors_fwd.numpy()).add_prefix('fwd_')
         preds_textm_bwd = pd.DataFrame(pred_tensors_bwd.numpy()).add_prefix('bwd_')
@@ -28,7 +27,7 @@ class EnsembleTrainer(Trainer):
                        .join(preds_target_fwd).rename(columns={0: "target"})
                        )
 
-        ensemble_df["target"].replace(list(range(0, len(self.classes))), self.classes, inplace=True)
+        ensemble_df["target"].replace(list(range(0, len(self.__classes))), self.__classes, inplace=True)
 
         column_names = ensemble_df.columns.values.tolist()
         column_names.pop()
@@ -46,7 +45,7 @@ class EnsembleTrainer(Trainer):
         return learn
 
     def train(self):
-        learn = self.retrieve_classifier(metrics=[error_rate, accuracy])
+        learn = self.retrieve_classifier()
 
         optar = partial(DiffGrad, betas=(.91, .999), eps=1e-7)
         learn.opt_func = optar
@@ -61,25 +60,14 @@ class EnsembleTrainer(Trainer):
         tuner = HyperParameterTuner(learn)
         lr = tuner.find_optimized_lr()
 
-        if self.is_imbalanced:
-            learn.fit_one_cycle(8, lr, callbacks=[SaveModelCallback(learn),OverSamplingCallback(learn),
+        learn.fit_one_cycle(8, lr, callbacks=[SaveModelCallback(learn),
+                                              ReduceLROnPlateauCallback(learn, factor=0.8)])
+
+        learn.fit_one_cycle(8, lr / 2, callbacks=[SaveModelCallback(learn),
                                                   ReduceLROnPlateauCallback(learn, factor=0.8)])
 
-            learn.fit_one_cycle(8, lr/2, callbacks=[SaveModelCallback(learn),OverSamplingCallback(learn),
-                                                  ReduceLROnPlateauCallback(learn, factor=0.8)])
-
-            learn.fit_one_cycle(8, lr/2,
-                                callbacks=[SaveModelCallback(learn, every='improvement', monitor='accuracy'),
-                                           ReduceLROnPlateauCallback(learn, factor=0.8)])
-        else:
-            learn.fit_one_cycle(8, lr, callbacks=[SaveModelCallback(learn),
-                                                  ReduceLROnPlateauCallback(learn, factor=0.8)])
-
-            learn.fit_one_cycle(8, lr / 2, callbacks=[SaveModelCallback(learn),
-                                                      ReduceLROnPlateauCallback(learn, factor=0.8)])
-
-            learn.fit_one_cycle(8, lr/2,
-                                callbacks=[SaveModelCallback(learn, every='improvement', monitor='accuracy'),
-                                           ReduceLROnPlateauCallback(learn, factor=0.8)])
+        learn.fit_one_cycle(8, lr/2,
+                            callbacks=[SaveModelCallback(learn, every='improvement', monitor='accuracy'),
+                                       ReduceLROnPlateauCallback(learn, factor=0.8)])
 
         return learn
