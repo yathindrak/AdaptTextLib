@@ -165,12 +165,10 @@ class AdaptText:
         df_trn, df_val = train_test_split(df, stratify=df[label_name], test_size=0.1, random_state=42)
 
         # forward training
-        lmDataBunchLoader = LMDataBunchLoader(df_trn, df_val, text_name, label_name, self.__splitting_ratio,
-                                              self.__data_root)
+        lmDataBunchLoader = LMDataBunchLoader(df_trn, df_val, text_name, label_name, self.__data_root, continuous_train=self.__continuous_train)
         data_lm = lmDataBunchLoader.load()
 
-        lmDataBunchLoaderBwd = LMDataBunchLoader(df_trn, df_val, text_name, label_name, self.__splitting_ratio,
-                                                 self.__data_root,
+        lmDataBunchLoaderBwd = LMDataBunchLoader(df_trn, df_val, text_name, label_name, self.__data_root, continuous_train=self.__continuous_train,
                                                  is_backward=True)
         data_lm_bwd = lmDataBunchLoaderBwd.load()
 
