@@ -174,14 +174,13 @@ class AdaptText:
 
         vocab = data_lm.train_ds.vocab
 
-        classificationDataBunchLoader = ClassificationDataBunchLoader(df_trn, df_val, text_name, label_name,
-                                                                      self.__splitting_ratio, vocab)
+        classificationDataBunchLoader = ClassificationDataBunchLoader(df_trn, df_val, text_name, label_name, vocab)
         data_class = classificationDataBunchLoader.load()
 
         # print(data_class.show_batch())
 
         classificationDataBunchLoaderBwd = ClassificationDataBunchLoader(df_trn, df_val, text_name, label_name,
-                                                                         self.__splitting_ratio, vocab, is_backward=True)
+                                                                         vocab, is_backward=True)
         data_class_bwd = classificationDataBunchLoaderBwd.load()
 
         # print(data_class_bwd.show_batch())
@@ -190,7 +189,7 @@ class AdaptText:
 
         print('Training Forward model...')
 
-        lmTrainerFwd = LMTrainer(data_lm, self.__lm_fns, self.__mdl_path, custom_model_store_path, False,
+        lmTrainerFwd = LMTrainer(data_lm, self.__lm_fns, self.__mdl_path, False,
                                  is_gpu=self.is_gpu)
         languageModelFWD = lmTrainerFwd.train()
 
@@ -212,7 +211,7 @@ class AdaptText:
 
         print('Training Backward model...')
 
-        lmTrainerBwd = LMTrainer(data_lm_bwd, self.__lm_fns_bwd, self.__mdl_path, custom_model_store_path_bwd, True,
+        lmTrainerBwd = LMTrainer(data_lm_bwd, self.__lm_fns_bwd, self.__mdl_path, True,
                                  is_gpu=self.is_gpu)
         languageModelBWD = lmTrainerBwd.train()
 

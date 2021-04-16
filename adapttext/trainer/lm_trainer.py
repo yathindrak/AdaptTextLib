@@ -7,7 +7,7 @@ from ..optimizer.DiffGradOptimizer import DiffGrad
 
 
 class LMTrainer(Trainer):
-    def __init__(self, data, lm_fns, mdl_path, model_store_path, is_backward=False, drop_mult=0.9, is_gpu=True,
+    def __init__(self, data, lm_fns, mdl_path, is_backward=False, drop_mult=0.9, is_gpu=True,
                  *args, **kwargs):
         super(LMTrainer, self).__init__(*args, **kwargs)
         self.__data = data
