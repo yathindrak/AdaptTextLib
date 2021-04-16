@@ -12,7 +12,7 @@ class DropboxHandler:
         self.__lang = lang
         self.__app_root = app_root
         self.__access_token = 's95ugxFduIUAAAAAAAAAAczIv3XTjtvlZ5muMcYvfUKYHY__DKsx_qwzLCL5rPCf'
-        self.__dbx = dropbox.Dropbox(self.access_token)
+        self.__dbx = dropbox.Dropbox(self.__access_token)
 
     # Upload a df as a text file
     def upload_text_file(self, df):
