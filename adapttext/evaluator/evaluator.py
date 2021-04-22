@@ -1,3 +1,4 @@
+from ...fastai1.text import TextClassificationInterpretation
 from ...fastai1.basics import *
 from sklearn.metrics import classification_report, matthews_corrcoef
 from sklearn.metrics import roc_curve, auc
@@ -40,8 +41,8 @@ class Evaluator():
     plt.legend(loc="lower right")
 
     # use learn_clas_fwd for the ensemble to get close confusion matrix for the actual
-    interpretation = ClassificationInterpretation(learn, preds, y, losses)
-    interpretation.plot_confusion_matrix()
+    classification_interpretation = ClassificationInterpretation(learn, preds, y, losses)
+    classification_interpretation.plot_confusion_matrix()
 
     pred_val = learn.get_preds(DatasetType.Valid)
     pred_val_l = pred_val[0].argmax(1)
@@ -50,6 +51,9 @@ class Evaluator():
 
     print("--Mathews Correlation Coefficient--")
     print(matthews_corrcoef(pred_val[1], pred_val_l))
+
+    text_classification_interpretation = TextClassificationInterpretation.from_learner(learn)
+    text_classification_interpretation.show_top_losses(10)
 
 
   def evaluate(self, learn):
