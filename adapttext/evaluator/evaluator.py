@@ -10,7 +10,7 @@ class Evaluator():
     def __init__(self):
         pass
 
-    def evaluate(self, learn):
+    def evaluate(self, learn, learn_cls_fwd):
         """
         Evaluate the ensemble model
         """
@@ -57,7 +57,7 @@ class Evaluator():
         print("--Mathews Correlation Coefficient--")
         print(matthews_corrcoef(pred_val[1], pred_val_l))
 
-        text_classification_interpretation = TextClassificationInterpretation.from_learner(learn)
+        text_classification_interpretation = TextClassificationInterpretation.from_learner(learn_cls_fwd)
         text_classification_interpretation.show_top_losses(10)
 
     def get_accuracy(self, learn):
