@@ -66,12 +66,6 @@ class EnsembleTrainer(Trainer):
         optar = partial(DiffGrad, betas=(.91, .999), eps=1e-7)
         learn.opt_func = optar
 
-        learn.fit_one_cycle(8, 1e-2, callbacks=[SaveModelCallback(learn),
-                                                ReduceLROnPlateauCallback(learn, factor=0.8)])
-
-        learn.fit_one_cycle(8, 3e-4, callbacks=[SaveModelCallback(learn),
-                                                ReduceLROnPlateauCallback(learn, factor=0.8)])
-
         # Find LR
         tuner = HyperParameterTuner(learn)
         lr = tuner.find_optimized_lr()
