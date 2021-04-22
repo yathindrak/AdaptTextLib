@@ -8,14 +8,18 @@ from dropbox.files import WriteMode
 from ...fastai1.basics import *
 
 class DropboxHandler:
+    """Handle Dropbox transactions"""
     def __init__(self, app_root, lang='si'):
         self.__lang = lang
         self.__app_root = app_root
         self.__access_token = 's95ugxFduIUAAAAAAAAAAczIv3XTjtvlZ5muMcYvfUKYHY__DKsx_qwzLCL5rPCf'
         self.__dbx = dropbox.Dropbox(self.__access_token)
 
-    # Upload a df as a text file
     def upload_text_file(self, df):
+        """
+        Upload dataframe as a text file
+        :rtype: object
+        """
         file_name = time.strftime("%Y%m%d-%H%M%S") + ".txt"
 
         time_str_fname = self.__app_root + "/" + file_name
@@ -27,12 +31,16 @@ class DropboxHandler:
 
         self.upload(file_to_upload, file_where_to)
 
-    # Upload the zip file to the destination
     def upload_zip_file(self, local_zip_path, destination_path):
-        # file_where_to = "/adapttext/models/" + file_name
+        """
+        Upload the zip file to the destination
+        """
         self.upload(local_zip_path, destination_path)
 
     def download_articles(self):
+        """
+        Download articles for the pretrained model
+        """
         articles_path = self.__app_root + "/data/" + self.__lang + "wiki/articles/"
         if not Path(articles_path).exists():
             raise Exception("Wiki articles are not downloaded..")
@@ -57,14 +65,19 @@ class DropboxHandler:
             shutil.move(source, destination)
 
     def download_pretrained_model(self, zip_file_name):
+        """
+        Download pretrained model
+        """
         file_from = f'/adapttext/models/{zip_file_name}'
 
         with open(zip_file_name, "wb") as f:
             metadata, res = self.__dbx.files_download(file_from)
             f.write(res.content)
 
-    # Upload the zip file to the destination
     def upload(self, file_to_upload, file_where_to):
+        """
+        Upload file
+        """
         with open(file_to_upload, "rb") as f:
             file_size_to_upload = os.path.getsize(file_to_upload)
             chunk_size_to_upload = 4 * 1024 * 1024

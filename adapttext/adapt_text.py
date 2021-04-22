@@ -16,6 +16,7 @@ from .utils.wiki_handler import WikiHandler
 
 
 class AdaptText:
+    """Bootstrapper module for AdaptText"""
     def __init__(self, lang, data_root, bs=128, splitting_ratio=0.1, continuous_train=False):
         self.__lang = lang
         self.__data_root = data_root
@@ -45,6 +46,10 @@ class AdaptText:
             self.is_gpu = True
 
     def setup_wiki_data(self):
+        """
+        Setup required wikipedia data
+        :rtype: str
+        """
         # making required directories
         self.__path.mkdir(exist_ok=True, parents=True)
         self.__mdl_path.mkdir(exist_ok=True)
@@ -61,6 +66,9 @@ class AdaptText:
         return base_lm_data_path
 
     def add_external_text(self, txt_filename, filepath, url):
+        """
+        Setup data via continuous learning flow
+        """
         headers = {'user-agent': 'Wget/1.16 (linux-gnu)'}
         r = requests.get(url, stream=True, headers=headers)
         with open(filepath, 'wb') as f:
@@ -75,14 +83,6 @@ class AdaptText:
 
     def prepare_base_lm_corpus(self):
         self.setup_wiki_data()
-        # txt_filename = "test-s.txt"
-        # filepath = Path(self.data_root + "/test-s.zip")
-        # url = "https://www.dropbox.com/s/cnd985vl1bof50y/test-s.zip?dl=0"
-
-        # txt_filename = "half-si-dedup.txt"
-        # filepath = Path(self.data_root + "/half-si-dedup.zip")
-        # url = "https://www.dropbox.com/s/alh6jf4rqxhhzow/half-si-dedup.zip?dl=0"
-
         txt_filename = "si_dedup.txt"
         filepath = Path(self.__data_root + "/si_dedup.txt.zip")
 
@@ -94,7 +94,9 @@ class AdaptText:
         dropbox_handler.download_articles()
 
     def prepare_pretrained_lm(self, model_file_name):
-        # models-test-s-10-epochs-with-cls.zip
+        """
+        Setup pretrained model
+        """
         if (Path(f'{os.getcwd()}{self.__data_root}').exists()):
             shutil.rmtree(f'{os.getcwd()}{self.__data_root}')
         dropbox_handler = DropboxHandler(self.__data_root)
@@ -119,6 +121,9 @@ class AdaptText:
             shutil.move(source, self.__mdl_path)
 
     def build_base_lm(self):
+        """
+        Build and Base Language Model
+        """
         if (not Path(self.__base_lm_data_path).exists()):
             print("Base LM corpus not found, preparing the corpus...")
             self.prepare_base_lm_corpus()
@@ -143,6 +148,9 @@ class AdaptText:
         lmTrainer_bwd.train()
 
     def build_classifier(self, df, text_name, label_name, grad_unfreeze: bool = True, preprocessor=None):
+        """
+        Build and Classification Model
+        """
         df = df[[text_name, label_name]]
         func_names = [f'{func_name}.{extension}' for func_name, extension in zip(self.__lm_fns, ['pth', 'pkl'])]
 
@@ -196,19 +204,6 @@ class AdaptText:
         classifierTrainerFwd = ClassifierTrainer(data_class, self.__lm_fns, self.__mdl_path, custom_model_store_path, False)
         classifierModelFWD = classifierTrainerFwd.train(grad_unfreeze)
 
-        # eval = Evaluator()
-        # classifierFWDAccuracy = eval.get_accuracy(classifierModelFWD)
-        # classifierFWDAccuracyNew = 0
-
-        # if(classifierFWDAccuracy.item() < 53.0):
-        #     classifierTrainerFwd = ClassifierTrainer(data_class, self.lm_fns, self.mdl_path, custom_model_store_path,
-        #                                              False)
-        #     classifierModelFWDNew = classifierTrainerFwd.train(grad_unfreeze)
-        #     classifierFWDAccuracyNew = eval.get_accuracy(classifierModelFWD)
-        #
-        # if (classifierFWDAccuracyNew.item() > classifierFWDAccuracy.item()):
-        #     classifierModelFWD = classifierModelFWDNew
-
         print('Training Backward model...')
 
         lmTrainerBwd = LMTrainer(data_lm_bwd, self.__lm_fns_bwd, self.__mdl_path, True,
@@ -219,26 +214,15 @@ class AdaptText:
                                                  custom_model_store_path_bwd, True)
         classifierModelBWD = classifierTrainerBwd.train(grad_unfreeze)
 
-        # eval = Evaluator()
-        # classifierBWDAccuracy = eval.get_accuracy(classifierModelBWD)
-        # classifierBWDAccuracyNew = 0
-        #
-        # if (classifierBWDAccuracy.item() < 53.0):
-        #     classifierTrainerBwd = ClassifierTrainer(data_class, self.lm_fns, self.mdl_path, custom_model_store_path,
-        #                                              False)
-        #     classifierModelBWDNew = classifierTrainerBwd.train(grad_unfreeze)
-        #     classifierBWDAccuracyNew = eval.get_accuracy(classifierModelBWDNew)
-        #
-        # if (classifierBWDAccuracyNew.item() > classifierBWDAccuracy.item()):
-        #     classifierModelBWD = classifierModelBWDNew
-
         ensembleTrainer = EnsembleTrainer(classifierModelFWD, classifierModelBWD, classes)
         ensembleModel = ensembleTrainer.train()
 
         return classifierModelFWD, classifierModelBWD, ensembleModel, classes
 
     def store_lm(self, zip_file_name):
-        # zip_file_name = "test.zip"
+        """
+        Store Base Language Model
+        """
         zip_archive = zipfile.ZipFile(zip_file_name, 'w', zipfile.ZIP_DEFLATED)
         for item in self.__lm_store_path:
             zip_archive.write(item)

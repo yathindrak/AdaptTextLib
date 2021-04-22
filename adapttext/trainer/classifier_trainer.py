@@ -8,17 +8,18 @@ from ..optimizer.DiffGradOptimizer import DiffGrad
 import copy
 
 class ClassifierTrainer(Trainer):
+    """Trainer for Classifier"""
     def __init__(self, data, lm_fns, mdl_path, model_store_path, is_backward=False, drop_mult=0.5, *args, **kwargs):
         super(ClassifierTrainer, self).__init__(*args, **kwargs)
         self.__data = data
-        self.__lm_fns = lm_fns
-        self.__mdl_path = mdl_path
-        self.__model_store_path = model_store_path
         self.__is_backward = is_backward
         self.__drop_mult = drop_mult
 
     def retrieve_classifier(self) -> 'TextClassifierLearner':
-
+        """
+        Setup and Retrieve Classification model
+        :rtype: object
+        """
         databunch = self.__data
         dropout_probs = dict(input=0.25, output=0.1, hidden=0.15, embedding=0.02, weight=0.2)
         size_of_embedding = 400
@@ -57,6 +58,10 @@ class ClassifierTrainer(Trainer):
         return learn
 
     def train(self, grad_unfreeze=True):
+        """
+        Train Classification model
+        :rtype: object
+        """
         learn = self.retrieve_classifier()
 
         optar = partial(DiffGrad, betas=(.91, .999), eps=1e-7)
