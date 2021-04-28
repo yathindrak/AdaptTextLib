@@ -90,14 +90,12 @@ class LMTrainer(Trainer):
 
         learn.fit_one_cycle(2, lr, moms=(0.8, 0.7),
                             callbacks=[SaveModelCallback(learn),
-                                       ReduceLROnPlateauCallback(learn, factor=0.8)])
+                                       ReduceLROnPlateauCallback(learn)])
 
         learn.unfreeze()
         learn.fit_one_cycle(8, lr, moms=(0.8, 0.7),
                             callbacks=[SaveModelCallback(learn),
-                                       ReduceLROnPlateauCallback(learn, factor=0.8)])
-
-        learn.predict("මේ අතර", n_words=30)
+                                       ReduceLROnPlateauCallback(learn)])
 
         if self.__is_backward:
             learn.save(f'{self._lang}fine_tuned_bwd')

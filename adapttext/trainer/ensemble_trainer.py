@@ -71,13 +71,13 @@ class EnsembleTrainer(Trainer):
         lr = tuner.find_optimized_lr()
 
         learn.fit_one_cycle(8, lr, callbacks=[SaveModelCallback(learn),
-                                              ReduceLROnPlateauCallback(learn, factor=0.8)])
+                                              ReduceLROnPlateauCallback(learn)])
 
         learn.fit_one_cycle(8, lr / 2, callbacks=[SaveModelCallback(learn),
-                                                  ReduceLROnPlateauCallback(learn, factor=0.8)])
+                                                  ReduceLROnPlateauCallback(learn)])
 
         learn.fit_one_cycle(8, lr/2,
                             callbacks=[SaveModelCallback(learn, every='improvement', monitor='accuracy'),
-                                       ReduceLROnPlateauCallback(learn, factor=0.8)])
+                                       ReduceLROnPlateauCallback(learn)])
 
         return learn
