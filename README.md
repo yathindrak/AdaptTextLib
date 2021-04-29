@@ -2,7 +2,7 @@
 
 Make text classification available for everyone !!!
 
-## Usage
+## Setup
 
 In the project directory, first clone the library
 
