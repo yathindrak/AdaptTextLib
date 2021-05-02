@@ -64,19 +64,23 @@ class ClassifierTrainer(Trainer):
         """
         learn = self.retrieve_classifier()
 
+        # DiffGrad Optimization
         optar = partial(DiffGrad, betas=(.91, .999), eps=1e-7)
         learn.opt_func = optar
 
+        # Load the LM encoder
         if self.__is_backward:
             learn.load_encoder(f'{self._lang}fine_tuned_enc_bwd')
         else:
             learn.load_encoder(f'{self._lang}fine_tuned_enc')
+        # Freeze the model
         learn.freeze()
 
-        # Find LR
+        # Obtain optimal LR
         tuner = HyperParameterTuner(learn)
         lr = tuner.find_optimized_lr()
 
+        # Train classifier for 12 iterations
         learn.fit_one_cycle(12, lr, callbacks=[SaveModelCallback(learn),
                                                   ReduceLROnPlateauCallback(learn)])
 
@@ -89,12 +93,16 @@ class ClassifierTrainer(Trainer):
         print('Gradual Unfreezing..')
         # Gradual unfreezing
         if grad_unfreeze:
+            # Freeze two layer groups
             learn.freeze_to(-2)
+            # Train classifier for eight iterations
             learn.fit_one_cycle(8, lr,
                                 callbacks=[SaveModelCallback(learn),
                                            ReduceLROnPlateauCallback(learn)])
 
+            # Freeze three layer groups
             learn.freeze_to(-3)
+            # Train classifier for six iterations
             learn.fit_one_cycle(6, lr,
                                 callbacks=[SaveModelCallback(learn),
                                            ReduceLROnPlateauCallback(learn)])
@@ -104,7 +112,7 @@ class ClassifierTrainer(Trainer):
         # Completely unfreezing
         learn.unfreeze()
 
-        # Find LR
+        # Obtain optimal LR
         tuner = HyperParameterTuner(learn)
         lr_unfrozed = tuner.find_optimized_lr()
 

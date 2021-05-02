@@ -24,5 +24,4 @@ class BaseLMDataBunchLoader(DataBunchLoader):
 
         # Save checkpoints
         data.save(f'{self._lang}_databunch')
-        print("Base LM vocab size : " + str(len(data.vocab.itos)))
         return data

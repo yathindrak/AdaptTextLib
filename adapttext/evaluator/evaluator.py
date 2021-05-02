@@ -14,39 +14,41 @@ class Evaluator():
         """
         Evaluate the ensemble model
         """
-        preds, y, losses = learn.get_preds(with_loss=True)
+        ensemble_predictions, y_values, losses = learn.get_preds(with_loss=True)
 
-        acc = accuracy(preds, y)
-        print('The accuracy is {0} %.'.format(acc))
+        ensemble_accuracy = accuracy(ensemble_predictions, y_values)
+        print('Ensemble accuracy of AdaptText is {0} %.'.format(ensemble_accuracy))
 
-        err = error_rate(preds, y)
-        print('The error rate is {0} %.'.format(err))
+        ensemble_error = error_rate(ensemble_predictions, y_values)
+        print('Error rate of AdaptText is {0} %.'.format(ensemble_error))
 
-        # probs from log preds
-        probs = np.exp(preds[:, 1])
-        # Compute ROC curve
-        fpr, tpr, thresholds = roc_curve(y, probs, pos_label=1)
+        # ROC_Curve Computation
+        probabilities = np.exp(ensemble_predictions[:, 1])
+        false_positive_rate, true_positive_rate, threshold_vals = roc_curve(y_values, probabilities, pos_label=1)
 
         # Compute ROC area
-        roc_auc = auc(fpr, tpr)
-        print('ROC area is {0}'.format(roc_auc))
+        roc_area = auc(false_positive_rate, true_positive_rate)
+        print('ROC_Area of AdaptText is {0}'.format(roc_area))
 
         xlim = [-0.01, 1.0]
         ylim = [0.0, 1.01]
 
-        # Plot the ROC curve
+        # Add Graph Details
         plt.figure()
-        plt.plot(fpr, tpr, color='darkorange', label='Ensemble Classifier : ROC curve (area = %0.2f)' % roc_auc)
+        plt.plot(false_positive_rate, true_positive_rate, color='darkorange', label='Ensemble Classifier : ROC curve (area = %0.2f)' % roc_area)
         plt.plot([0, 1], [0, 1], color='navy', linestyle='--')
         plt.xlim(xlim)
         plt.ylim(ylim)
+        # Add X and Y axes
         plt.xlabel('False Positive(FP) Rate')
         plt.ylabel('True Positive(TP) Rate')
-        plt.title('Receiver operating characteristic')
+        # Add Graph title
+        plt.title('Receiver Operating Characteristic')
+        # Add Graph legend
         plt.legend(loc="lower right")
 
         # use learn_clas_fwd for the ensemble to get close confusion matrix for the actual
-        classification_interpretation = ClassificationInterpretation(learn, preds, y, losses)
+        classification_interpretation = ClassificationInterpretation(learn, ensemble_predictions, y_values, losses)
         classification_interpretation.plot_confusion_matrix()
 
         pred_val = learn.get_preds(DatasetType.Valid)
@@ -68,9 +70,9 @@ class Evaluator():
         :return: accuracy
         :rtype: float
         """
-        preds, y, losses = learn.get_preds(with_loss=True)
+        model_predictions, y_vals, losses = learn.get_preds(with_loss=True)
 
-        acc = accuracy(preds, y)
-        print('The accuracy is {0} %.'.format(acc))
+        model_accuracy = accuracy(model_predictions, y_vals)
+        print('Accuracy of AdaptText is {0} %.'.format(model_accuracy))
 
-        return acc
+        return model_accuracy
