@@ -63,6 +63,7 @@ class EnsembleTrainer(Trainer):
         """
         learn = self.retrieve_classifier()
 
+        # DiffGrad Optimization
         optar = partial(DiffGrad, betas=(.91, .999), eps=1e-7)
         learn.opt_func = optar
 

@@ -87,7 +87,7 @@ class ClassifierTrainer(Trainer):
         classifier_initial_accuracy = evaluator.get_accuracy(classifier_initial).item()
 
         print('Gradual Unfreezing..')
-
+        # Gradual unfreezing
         if grad_unfreeze:
             learn.freeze_to(-2)
             learn.fit_one_cycle(8, lr,
@@ -101,8 +101,10 @@ class ClassifierTrainer(Trainer):
 
         print('Completely Unfreezing..')
 
+        # Completely unfreezing
         learn.unfreeze()
 
+        # Find LR
         tuner = HyperParameterTuner(learn)
         lr_unfrozed = tuner.find_optimized_lr()
 

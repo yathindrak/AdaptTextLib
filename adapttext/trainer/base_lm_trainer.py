@@ -80,10 +80,13 @@ class BaseLMTrainer(Trainer):
 
         gc.collect()
 
+        # Completely unfreezing
         learn.unfreeze()
         learn.fit_one_cycle(10, lr, moms=(0.8, 0.7),
                             callbacks=[SaveModelCallback(learn), ReduceLROnPlateauCallback(learn)])
 
+        # Save Model
         learn.to_fp32().save(self.__mdl_path / self.__lm_fns[0], with_opt=False)
 
+        # Save Vocab
         learn.data.vocab.save(self.__model_store_path)

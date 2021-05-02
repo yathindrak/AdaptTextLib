@@ -81,6 +81,7 @@ class LMTrainer(Trainer):
             else:
                 learn = self.retrieve_lm()
 
+        # Diffgrad optimization
         optar = partial(DiffGrad, betas=(.91, .999), eps=1e-7)
         learn.opt_func = optar
 
@@ -97,6 +98,7 @@ class LMTrainer(Trainer):
                             callbacks=[SaveModelCallback(learn),
                                        ReduceLROnPlateauCallback(learn)])
 
+        # Save checkpoints
         if self.__is_backward:
             learn.save(f'{self._lang}fine_tuned_bwd')
             learn.save_encoder(f'{self._lang}fine_tuned_enc_bwd')

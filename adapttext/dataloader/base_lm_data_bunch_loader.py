@@ -9,10 +9,7 @@ class BaseLMDataBunchLoader(DataBunchLoader):
         super(BaseLMDataBunchLoader, self).__init__(*args, **kwargs)
         self.__path = path
         self.__splitting_ratio = splitting_ratio
-        # self.seed = seed
-        # self.bs = bs
         self.__is_backward = is_backward
-        # self.lang = lang
 
     def load(self):
         """
@@ -24,10 +21,8 @@ class BaseLMDataBunchLoader(DataBunchLoader):
                 .split_by_rand_pct(self.__splitting_ratio, seed=self._seed)
                 .label_for_lm()
                 .databunch(bs=self._bs, num_workers=1, backwards=self.__is_backward))
-        # Store data
+
+        # Save checkpoints
         data.save(f'{self._lang}_databunch')
-        print(len(data.vocab.itos), len(data.train_ds))
         print("Base LM vocab size : " + str(len(data.vocab.itos)))
-        # Load data
-        # data = load_data(self.path, f'{self.lang}_databunch', bs=self.bs)
         return data

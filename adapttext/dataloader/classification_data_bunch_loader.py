@@ -23,17 +23,17 @@ class ClassificationDataBunchLoader(DataBunchLoader):
         print(item_counts)
         self.__df_train_set[self.__label_col_name].value_counts().plot.bar(rot=30)
 
+        # spacy tokenizer
         tokenizer = Tokenizer(SpacyTokenizer, lang="xx")
 
         data = TextClasDataBunch.from_df('.', train_df=self.__df_train_set, valid_df=self.__df_val_set, vocab=self.__vocab,
                                          bs=32, text_cols=self.__text_col_name, label_cols=self.__label_col_name,
                                          tokenizer=tokenizer, backwards=self.__is_backward)
 
+        # Save checkpoints
         if self.__is_backward:
             data.save(f'{self._lang}_data_class_bwd.pkl')
-            # data = load_data('./', f'{self.lang}_data_class_bwd.pkl')
         else:
             data.save(f'{self._lang}_data_class_fwd.pkl')
-            # data = load_data('./', f'{self.lang}_data_class_fwd.pkl', bs=64)
 
         return data

@@ -25,11 +25,13 @@ class LMDataBunchLoader(DataBunchLoader):
             dropbox_handler = DropboxHandler(self.__app_root)
             dropbox_handler.upload_text_file(self.__df_train_set[self.__text_col_name])
 
+        # spacy tokenizer
         tokenizer = Tokenizer(SpacyTokenizer, lang="xx")
 
         data = TextLMDataBunch.from_df('.', train_df=self.__df_train_set, valid_df=self.__df_val_set,
                                        text_cols=self.__text_col_name, tokenizer=tokenizer, backwards=self.__is_backward)
 
+        # Save checkpoints
         if self.__is_backward:
             data.save(f'{self._lang}_data_lm_bwd.pkl')
         else:
