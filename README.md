@@ -2,11 +2,12 @@
 
 Make text classification available for everyone !!!
 
+This project is the library created along with [AdaptText UI based solution](https://github.com/yathindrakodithuwakku/AdaptText).
 ## Setup
 
 In the project directory, first clone the library
 
-`git clone https://gitlab.com/AdaptText/AdaptTextLib.git`
+`git clone https://gitlab.com/yathindrakodithuwakku/AdaptTextLib.git`
 
 Then run the setup.sh shell script to make everything ready for you.
 
